@@ -4,19 +4,19 @@
 
 ### Explanation
 
-The MPI programm is used for exchanging messages between multiple computers running a parallel programm accross distributed memory.
+The MPI program is used for exchanging messages between multiple computers running a parallel program accross distributed memory.
 
 So for each processor which is running, we want to print "Hello World" and informations about the processor into the console.
 
-At the begining of the programm, we initialize the MPI execution environment, which permits to use multiple processors and run multiple instances of our programm.
+At the begining of the program, we initialize the MPI execution environment, which permits to use multiple processors and run our program on multiple processors.
 
-Then, we takes informations about the current processor, like it rank, it name and the number of processors
+Then, we take informations about the current processor, like it rank, it name and the number of processors.
 
 Finally, we print all informations and terminate MPI execution environment.
 
 ### Challenges encountered
 
-At the begining, I can't run my programm because I don't initialize the mpi environment. But the commands "$ module load mpi", "$ mpic++ tp1.cpp" for compile my program, and
+At the begining, I can't run my programm because I don't initialize the mpi environment. But the commands "$ module load mpi", "$ mpic++ tp1.cpp" to compile my program, and
 "$ mpirun -np 4 a.out" to run the programm with 4 processors fix my problem.
 
 ### Functions used
