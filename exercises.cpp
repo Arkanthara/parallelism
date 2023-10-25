@@ -1,7 +1,6 @@
 #include <mpi.h>
 #include <string.h>
 #include <iostream>
-#define MAX_BUFFER 20
 
 using namespace std;
 
@@ -26,8 +25,8 @@ int exercise_1(void) {
                 }
         }
         else {
-                char buffer[MAX_BUFFER];
-                MPI_Recv(buffer, MAX_BUFFER, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
+                char buffer[size];
+                MPI_Recv(buffer, size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
                 cout << "Message received by processor " << world_rank << " from processor 0: " << buffer << endl;
         }
 
@@ -53,10 +52,10 @@ int exercise_2(void) {
         int size = strlen(text);
 
         // Buffer for receive message
-        char buffer[MAX_BUFFER];
+        char buffer[size];
 
         MPI_Send(text, size, MPI_CHAR, (world_rank + 1) % world_size, 0, MPI_COMM_WORLD);
-        MPI_Recv(buffer, MAX_BUFFER, MPI_CHAR, (world_rank + world_size - 1) % world_size, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(buffer, size, MPI_CHAR, (world_rank + world_size - 1) % world_size, 0, MPI_COMM_WORLD, &status);
         cout << "Processor " << world_rank <<  " receive from processor " << (world_rank + world_size - 1) % world_size << " the message: " << buffer << endl;
 
         MPI_Finalize();
@@ -81,14 +80,14 @@ int exercise_3(void) {
 	char * text = "Hello world !";
 	int size = strlen(text);
 
-	char buffer[MAX_BUFFER];
+	char buffer[size];
         
 	int mask = 1;
         
 	while (world_size > mask) {
 		int process = world_rank ^ mask;
 		if (process > world_rank) {
-			MPI_Recv(buffer, MAX_BUFFER, MPI_CHAR, process, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(buffer, size, MPI_CHAR, process, 0, MPI_COMM_WORLD, &status);
 			cout << "Processor " << world_rank <<" received " << buffer << " from processor " << process << endl;
 		}
 		else {

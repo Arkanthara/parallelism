@@ -14,4 +14,4 @@ clean:
 	rm $(OBJS) tp2
 
 cleanoutput:
-	rm Michel_TP2-*
+	rm ./out/* ./err/*
