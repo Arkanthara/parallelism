@@ -1,4 +1,4 @@
-% Created 2023-10-25 Wed 15:30
+% Created 2023-10-25 Wed 15:37
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -30,22 +30,22 @@
 \pagebreak
 
 \section{Explication des algorithmes}
-\label{sec:org6509230}
+\label{sec:org0f9b9db}
 
 \subsection{Diffusion séquentielle}
-\label{sec:org9641909}
+\label{sec:orgb1d723e}
 
 Le principe de cet algorithme est qu'il n'y a qu'un seul processeur qui envoie un message à tous les autres processeurs.
 
 \subsection{Anneau séquentiel}
-\label{sec:org6901c84}
+\label{sec:orgdf6d68f}
 
 Le principe de cet algorithme est que chaque processeur envoie un message au processeur de rang supérieur à lui modulo nombre de processeurs (Si N est le nombre de processeurs,
 alors le processeur N - 1 va envoyer un message au processeur N modulo N = 0 \ldots{} Ainsi on fait une boucle). Et il recevra un message du processeur
 de rang inférieur à lui modulo nombre de processeurs (si on est le processeur 0, on va recevoir un message du processeur -1 modulo N = N - 1\ldots{})
 
 \subsection{Diffusion HyperCube}
-\label{sec:org86f7d66}
+\label{sec:org290faba}
 
 Le principe de cet algorithme est que chaque processeur échange avec le processeur dont le rang diffère de son rang de seulement un seul bit, et ainsi de suite\ldots{}
 
@@ -56,14 +56,14 @@ de ce processeur.
 \pagebreak
 
 \section{Explication du code}
-\label{sec:org483c65d}
+\label{sec:org201e021}
 
 Dans tout notre code, j'ai défini \(world\_size = N\) qui est le nombre de processeurs utilisés par le programme.
 Ensuite, chaque processeur est numéroté de 0 à \((N - 1)\). Le numéro du processeur est dans notre cas unique et
 se trouve dans la variable \(world\_rank\) de mon code.
 
 \subsection{Diffusion séquentielle}
-\label{sec:org79ace5c}
+\label{sec:org71da757}
 \begin{verbatim}
 if (world_rank == 0) {
         for (int i = 1; i < world_size; i++) {
@@ -84,7 +84,7 @@ Sinon, cela signifie qu'on n'est pas le processeur de rang 0, donc on lit le mes
 par le processeur 0 et on affiche quelque chose.
 
 \subsection{Anneau séquentiel}
-\label{sec:org63c884e}
+\label{sec:org5774d8e}
 \begin{verbatim}
 MPI_Send(text, size, MPI_CHAR, (world_rank + 1) % world_size, 0, MPI_COMM_WORLD);
 MPI_Recv(
@@ -105,7 +105,7 @@ si on est le processeur de rang 0, on va recevoir un message du processeur de ra
 C'est pour cela que je fais un modulo nombre de processeurs dans le send et le receive de mon code.
 
 \subsection{Diffusion HyperCube}
-\label{sec:orge967616}
+\label{sec:org50a7393}
 \begin{verbatim}
 int mask = 1;
 while (world_size > mask) {
@@ -141,7 +141,7 @@ du processeur dont le rang est égal à cette valeur. Et si on a par exemple le 
 Et à la fin de notre boucle while, on fait un décalage de 1 bits vers la gauche du masque, ce qui nous donne un masque \(010 = 2\).
 
 \subsection{Main}
-\label{sec:org616670b}
+\label{sec:org8ac4bcc}
 
 Voilà à quoi ressemble mon programme main.
 \begin{verbatim}
@@ -183,7 +183,7 @@ et si l'utilisateur a donné quelque chose différent de 1, 2 ou 3, on affiche u
 
 
 \section{Tests et discussion sur l'output}
-\label{sec:org77c3c4f}
+\label{sec:org7bb9c18}
 
 Pour tester mon code, j'ai simplement fait envoyer par les différents processeurs le message "Hello world !", et lorsque un processeur recevait un message, il affichait le message reçu,
 son rang et le rang du processeur ayant envoyé le message. Ainsi, je vérifiais "à la main" les résultats que j'avais obtenus en regardant si c'était cohérent avec ce qui m'étais demandé\ldots{}
@@ -207,7 +207,7 @@ cleanoutput:
         rm ./err/* ./out/*
 \end{verbatim}
 \subsection{Diffusion séquentielle}
-\label{sec:orgd364241}
+\label{sec:org0c8947e}
 Voilà l'output du programme de la diffusion séquentielle pour une exécution locale:
 \begin{verbatim}
 make
@@ -227,7 +227,7 @@ Ici, on veut que notre processeur 0 envoie un message aux autres processeurs\ldo
 car on a bien le processeur 0 qui envoie un message à tous les autres processeurs.
 
 \subsection{Anneau séquentiel}
-\label{sec:org8f09515}
+\label{sec:orgc4e0a82}
 
 Voilà l'output de l'anneau séquentiel pour une exécution locale:
 
@@ -247,7 +247,7 @@ Processor 0 receive from processor 3 the message: Hello World !
 Ici, on peut voir que le processeur 1 a envoyé un message au processeur 2, qui a envoyé un message au processeur 3 etc\ldots{} Cela fait bien un cycle, donc on est content du résultat obtenu.
 
 \subsection{Diffusion HyperCube}
-\label{sec:org0c30591}
+\label{sec:orgd47d1fc}
 
 Voilà l'output de la diffusion HyperCube, exécutée de nouveau localement.
 \begin{verbatim}
@@ -269,9 +269,11 @@ Puis notre masque est égal à \(010\). Donc le processeur \(010 = 2\) envoie un
 Notre output est bien ce qu'on attend, donc on est content.
 
 Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon on va avoir une erreur, car tous les processeurs doivent travailler deux à deux, tandis qu'avec la diffusion séquentielle, on n'a pas besoin d'avoir un nombre pair de processeurs, ni dans l'anneau séquentiel.
+J'ai pu constater que le temps d'exécution ne variait pas trop entre 2 processeurs et 16 processeurs pour la diffusion séquentielle (je n'ai pas réussi à faire tourner avec plus de processeurs).
+les méthodes\ldots{} Cependant, on peut remarquer que le temps d'exécution pour le hypercube augmente avec le nombre de processeurs, ainsi que pour l'anneau séquentiel.
 
 \section{Difficultés}
-\label{sec:org6a16459}
+\label{sec:org2735bf0}
 
 Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss a résoud mes problèmes de librairies.
 Voilà le contenu du script utilisé pour lancer le programme sur baobab:

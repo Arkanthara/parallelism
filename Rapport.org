@@ -225,6 +225,8 @@ Puis notre masque est égal à $010$. Donc le processeur $010 = 2$ envoie un mes
 Notre output est bien ce qu'on attend, donc on est content.
 
 Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon on va avoir une erreur, car tous les processeurs doivent travailler deux à deux, tandis qu'avec la diffusion séquentielle, on n'a pas besoin d'avoir un nombre pair de processeurs, ni dans l'anneau séquentiel.
+J'ai pu constater que le temps d'exécution ne variait pas trop entre 2 processeurs et 16 processeurs pour la diffusion séquentielle (je n'ai pas réussi à faire tourner avec plus de processeurs).
+les méthodes... Cependant, on peut remarquer que le temps d'exécution pour le hypercube augmente avec le nombre de processeurs, ainsi que pour l'anneau séquentiel.
 
 * Difficultés
 
