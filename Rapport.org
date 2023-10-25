@@ -2,6 +2,8 @@
 #+AUTHOR: Michel Donnet
 #+DATE: \today
 
+\pagebreak
+
 * Explication des algorithmes
 
 ** Diffusion séquentielle
@@ -167,7 +169,7 @@ exercises.o: exercises.cpp
 clean:
 	rm $(OBJS) tp2
 cleanoutput:
-        rm Michel_TP2-*
+        rm ./err/* ./out/*
 #+end_src
 ** Diffusion séquentielle
 Voilà l'output du programme de la diffusion séquentielle pour une exécution locale:
@@ -226,27 +228,36 @@ Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon 
 
 * Difficultés
 
-Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss et l'exécuter avec le script run.sh a résolu partiellement le problème...
-J'ai dû ajouter dans mon script run.sh l'option --mpi=pmi2 à srun pour que cela marche effectivement. Voilà le contenu du script utilisé pour lancer le programme sur baobab:
+Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss a résoud mes problèmes de librairies.
+Voilà le contenu du script utilisé pour lancer le programme sur baobab:
 
 #+begin_src sh
   #!/bin/sh
-  #SBATCH --job-name=Michel_TP2          # Permit us to find easily our job
-  #SBATCH --output Michel_TP2-out.o%j    # Outputs will be written here
-  #SBATCH --error Michel_TP2-err.e%j     # Errors will be written here
+  #SBATCH --job-name Michel_TP2          # Permit us to find easily our job
+  #SBATCH --output ./out/Michel_TP2-out.o%j    # Outputs will be written here
+  #SBATCH --error ./err/Michel_TP2-err.e%j     # Errors will be written here
   #SBATCH --ntasks 16                    # Number of tasks in our job
   #SBATCH --cpus-per-task 1              # Number of cpus per tasks
   #SBATCH --partition debug-cpu          # Partition to use
   #SBATCH --time 15:00                   # Maximum time execution
 
+  # Load modules for compiling and run program
   module load foss
   module load CUDA
 
   echo $SLURM_NODELIST
-  mytime=$date
-  srun --mpi=pmi2 ./tp2 $1
-  mytime=$($mytime - $date)
-  echo $mytime
+
+  # Compile program
+  make
+  # Run program. If the parameter is not given to execute an exercise,
+  # we print an error which will be in ./err/Michel_TP2-err.e%j
+  # Else, we execute program
+  if [ -n $1 ]; then
+          srun --mpi=pmi2 ./tp2 $1
+  else
+          echo "Error ! Usage of the script: ./run.sh [number of the exercise]" 1>&2
+  fi
+
 #+end_src
 
 Il faut donner le numéro de l'exercice qu'on veut exécuter en paramètre au script pour que
@@ -254,10 +265,32 @@ celui-ci fonctionne. Cela donnera par exemple:
 #+begin_src sh
 sbatch run.sh 1
 #+end_src
-On aura comme output 2 fichiers: un fichier nommé Michel_TP2-out.o%j et un fichier contenant
-les erreurs nommé Michel_TP2-err.o%j. Si on ouvre le fichier, on peut avoir les informations
+On aura comme output 2 fichiers: un fichier nommé Michel_TP2-out.o%j qui se trouvera dans ./out/, et un fichier contenant
+les erreurs nommé Michel_TP2-err.o%j qui se trouvera dans ./err/. Si on ouvre les fichiers de ./out, on peut avoir les informations
 de l'output de notre programme exécuté sur les n processeurs.
+Si on ouvre les fichiers de ./err/, on aura tous les messages d'erreur.
 
+J'ai eu comme autre problème le message d'erreur suivant:
+#+begin_src sh
+srun: error: Couldn't find the specified plugin name for mpi/pmix_v3 looking at all files
+srun: error: cannot find mpi plugin for mpi/pmix_v3
+srun: error: MPI: Cannot create context for mpi/pmix_v3
+srun: error: MPI: Unable to load any plugin
+srun: error: Invalid MPI type 'pmix_v3', --mpi=list for acceptable types
+#+end_src
+C'est pourquoi j'exécute ma fonction srun avec --mpi=pmi2 comme paramètre, car cela a résolu mon problème.
+En fait j'ai exécuté
+#+begin_src sh
+srun --mpi=list
+#+end_src
+Et j'ai eu comme résultat
+#+begin_src sh
+MPI plugin types are...
+	none
+	pmi2
+	cray_shasta
+#+end_src
+Donc j'ai ajouté le paramètre --mpi=pmi2 à srun.
 
 
 

@@ -1,4 +1,4 @@
-% Created 2023-10-25 Wed 14:17
+% Created 2023-10-25 Wed 15:30
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -27,24 +27,25 @@
 \maketitle
 \tableofcontents
 
+\pagebreak
 
 \section{Explication des algorithmes}
-\label{sec:orge401787}
+\label{sec:org6509230}
 
 \subsection{Diffusion séquentielle}
-\label{sec:orgdbb1f4a}
+\label{sec:org9641909}
 
 Le principe de cet algorithme est qu'il n'y a qu'un seul processeur qui envoie un message à tous les autres processeurs.
 
 \subsection{Anneau séquentiel}
-\label{sec:org8f42318}
+\label{sec:org6901c84}
 
 Le principe de cet algorithme est que chaque processeur envoie un message au processeur de rang supérieur à lui modulo nombre de processeurs (Si N est le nombre de processeurs,
 alors le processeur N - 1 va envoyer un message au processeur N modulo N = 0 \ldots{} Ainsi on fait une boucle). Et il recevra un message du processeur
 de rang inférieur à lui modulo nombre de processeurs (si on est le processeur 0, on va recevoir un message du processeur -1 modulo N = N - 1\ldots{})
 
 \subsection{Diffusion HyperCube}
-\label{sec:org875288f}
+\label{sec:org86f7d66}
 
 Le principe de cet algorithme est que chaque processeur échange avec le processeur dont le rang diffère de son rang de seulement un seul bit, et ainsi de suite\ldots{}
 
@@ -55,14 +56,14 @@ de ce processeur.
 \pagebreak
 
 \section{Explication du code}
-\label{sec:orgc9e0055}
+\label{sec:org483c65d}
 
 Dans tout notre code, j'ai défini \(world\_size = N\) qui est le nombre de processeurs utilisés par le programme.
 Ensuite, chaque processeur est numéroté de 0 à \((N - 1)\). Le numéro du processeur est dans notre cas unique et
 se trouve dans la variable \(world\_rank\) de mon code.
 
 \subsection{Diffusion séquentielle}
-\label{sec:orge39e158}
+\label{sec:org79ace5c}
 \begin{verbatim}
 if (world_rank == 0) {
         for (int i = 1; i < world_size; i++) {
@@ -83,7 +84,7 @@ Sinon, cela signifie qu'on n'est pas le processeur de rang 0, donc on lit le mes
 par le processeur 0 et on affiche quelque chose.
 
 \subsection{Anneau séquentiel}
-\label{sec:org2b43bdc}
+\label{sec:org63c884e}
 \begin{verbatim}
 MPI_Send(text, size, MPI_CHAR, (world_rank + 1) % world_size, 0, MPI_COMM_WORLD);
 MPI_Recv(
@@ -104,7 +105,7 @@ si on est le processeur de rang 0, on va recevoir un message du processeur de ra
 C'est pour cela que je fais un modulo nombre de processeurs dans le send et le receive de mon code.
 
 \subsection{Diffusion HyperCube}
-\label{sec:org59ea6da}
+\label{sec:orge967616}
 \begin{verbatim}
 int mask = 1;
 while (world_size > mask) {
@@ -140,7 +141,7 @@ du processeur dont le rang est égal à cette valeur. Et si on a par exemple le 
 Et à la fin de notre boucle while, on fait un décalage de 1 bits vers la gauche du masque, ce qui nous donne un masque \(010 = 2\).
 
 \subsection{Main}
-\label{sec:orgd8519ef}
+\label{sec:org616670b}
 
 Voilà à quoi ressemble mon programme main.
 \begin{verbatim}
@@ -182,7 +183,7 @@ et si l'utilisateur a donné quelque chose différent de 1, 2 ou 3, on affiche u
 
 
 \section{Tests et discussion sur l'output}
-\label{sec:org84cc826}
+\label{sec:org77c3c4f}
 
 Pour tester mon code, j'ai simplement fait envoyer par les différents processeurs le message "Hello world !", et lorsque un processeur recevait un message, il affichait le message reçu,
 son rang et le rang du processeur ayant envoyé le message. Ainsi, je vérifiais "à la main" les résultats que j'avais obtenus en regardant si c'était cohérent avec ce qui m'étais demandé\ldots{}
@@ -203,10 +204,10 @@ exercises.o: exercises.cpp
 clean:
         rm $(OBJS) tp2
 cleanoutput:
-        rm Michel_TP2-*
+        rm ./err/* ./out/*
 \end{verbatim}
 \subsection{Diffusion séquentielle}
-\label{sec:org713b163}
+\label{sec:orgd364241}
 Voilà l'output du programme de la diffusion séquentielle pour une exécution locale:
 \begin{verbatim}
 make
@@ -226,7 +227,7 @@ Ici, on veut que notre processeur 0 envoie un message aux autres processeurs\ldo
 car on a bien le processeur 0 qui envoie un message à tous les autres processeurs.
 
 \subsection{Anneau séquentiel}
-\label{sec:org07603d6}
+\label{sec:org8f09515}
 
 Voilà l'output de l'anneau séquentiel pour une exécution locale:
 
@@ -246,7 +247,7 @@ Processor 0 receive from processor 3 the message: Hello World !
 Ici, on peut voir que le processeur 1 a envoyé un message au processeur 2, qui a envoyé un message au processeur 3 etc\ldots{} Cela fait bien un cycle, donc on est content du résultat obtenu.
 
 \subsection{Diffusion HyperCube}
-\label{sec:orga77e252}
+\label{sec:org0c30591}
 
 Voilà l'output de la diffusion HyperCube, exécutée de nouveau localement.
 \begin{verbatim}
@@ -270,26 +271,69 @@ Notre output est bien ce qu'on attend, donc on est content.
 Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon on va avoir une erreur, car tous les processeurs doivent travailler deux à deux, tandis qu'avec la diffusion séquentielle, on n'a pas besoin d'avoir un nombre pair de processeurs, ni dans l'anneau séquentiel.
 
 \section{Difficultés}
-\label{sec:org003053c}
+\label{sec:org6a16459}
 
-Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss et l'exécuter avec le script run.sh a résolu partiellement le problème\ldots{}
-J'ai dû ajouter dans mon script run.sh l'option --mpi=pmi2 à srun pour que cela marche effectivement. Voilà le contenu du script utilisé pour lancer le programme sur baobab:
+Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss a résoud mes problèmes de librairies.
+Voilà le contenu du script utilisé pour lancer le programme sur baobab:
 
 \begin{verbatim}
 #!/bin/sh
-#SBATCH --job-name=Michel_TP2          # Permit us to find easily our job
-#SBATCH --output Michel_TP2-out.o%j    # This is the file where the outputs will be written
-#SBATCH --error Michel_TP2-err.e%j     # This is the file where the errors will be written
+#SBATCH --job-name Michel_TP2          # Permit us to find easily our job
+#SBATCH --output ./out/Michel_TP2-out.o%j    # Outputs will be written here
+#SBATCH --error ./err/Michel_TP2-err.e%j     # Errors will be written here
 #SBATCH --ntasks 16                    # Number of tasks in our job
 #SBATCH --cpus-per-task 1              # Number of cpus per tasks
 #SBATCH --partition debug-cpu          # Partition to use
 #SBATCH --time 15:00                   # Maximum time execution
 
+# Load modules for compiling and run program
 module load foss
 module load CUDA
 
 echo $SLURM_NODELIST
 
-srun --mpi=pmi2 ./tp2 $1
+# Compile program
+make
+# Run program. If the parameter is not given to execute an exercise,
+# we print an error which will be in ./err/Michel_TP2-err.e%j
+# Else, we execute program
+if [ -n $1 ]; then
+        srun --mpi=pmi2 ./tp2 $1
+else
+        echo "Error ! Usage of the script: ./run.sh [number of the exercise]" 1>&2
+fi
+
 \end{verbatim}
+
+Il faut donner le numéro de l'exercice qu'on veut exécuter en paramètre au script pour que
+celui-ci fonctionne. Cela donnera par exemple:
+\begin{verbatim}
+sbatch run.sh 1
+\end{verbatim}
+On aura comme output 2 fichiers: un fichier nommé Michel\textsubscript{TP2}-out.o\%j qui se trouvera dans ./out/, et un fichier contenant
+les erreurs nommé Michel\textsubscript{TP2}-err.o\%j qui se trouvera dans ./err/. Si on ouvre les fichiers de ./out, on peut avoir les informations
+de l'output de notre programme exécuté sur les n processeurs.
+Si on ouvre les fichiers de ./err/, on aura tous les messages d'erreur.
+
+J'ai eu comme autre problème le message d'erreur suivant:
+\begin{verbatim}
+srun: error: Couldn't find the specified plugin name for mpi/pmix_v3 looking at all files
+srun: error: cannot find mpi plugin for mpi/pmix_v3
+srun: error: MPI: Cannot create context for mpi/pmix_v3
+srun: error: MPI: Unable to load any plugin
+srun: error: Invalid MPI type 'pmix_v3', --mpi=list for acceptable types
+\end{verbatim}
+C'est pourquoi j'exécute ma fonction srun avec --mpi=pmi2 comme paramètre, car cela a résolu mon problème.
+En fait j'ai exécuté
+\begin{verbatim}
+srun --mpi=list
+\end{verbatim}
+Et j'ai eu comme résultat
+\begin{verbatim}
+MPI plugin types are...
+        none
+        pmi2
+        cray_shasta
+\end{verbatim}
+Donc j'ai ajouté le paramètre --mpi=pmi2 à srun.
 \end{document}
