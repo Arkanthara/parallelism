@@ -1,7 +1,7 @@
 CC = mpic++
 OBJS = exercises.o
 CFLAGS = -c -g -Wall
-.PHONY = clean
+.PHONY = clean, cleanoutput
 
 
 tp2: main.cpp exercises.o
@@ -13,11 +13,5 @@ exercises.o: exercises.cpp
 clean:
 	rm $(OBJS) tp2
 
-1: tp2
-	mpirun tp2 1
-
-2: tp2
-	mpirun tp2 2
-
-3: tp2
-	mpirun tp2 3
+cleanoutput:
+	rm Michel_TP2-*

@@ -38,8 +38,8 @@ se trouve dans la variable $world\_rank$ de mon code.
           }
   }
   else {
-          char buffer[MAX_BUFFER];
-          MPI_Recv(buffer, MAX_BUFFER, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
+          char buffer[size];
+          MPI_Recv(buffer, size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &status);
           printf("Your message");
   }
 
@@ -55,7 +55,7 @@ par le processeur 0 et on affiche quelque chose.
                   MPI_Send(text, size, MPI_CHAR, (world_rank + 1) % world_size, 0, MPI_COMM_WORLD);
                   MPI_Recv(
                            buffer,
-                           MAX_BUFFER,
+                           size,
                            MPI_CHAR,
                            (world_rank + world_size - 1) % world_size,
                            0,
@@ -78,7 +78,7 @@ C'est pour cela que je fais un modulo nombre de processeurs dans le send et le r
                        if (process > world_rank) {
                              MPI_Recv(
                                       buffer,
-                                      MAX_BUFFER,
+                                      size,
                                       MPI_CHAR,
                                       process,
                                       0,
@@ -146,7 +146,7 @@ Si l'utilisateur a entré un paramètre, on le convertit en nombre (au moyen de 
 et si l'utilisateur a donné quelque chose différent de 1, 2 ou 3, on affiche un mode d'emploi du programme et on quitte.
 
 
-* Tests
+* Tests et discussion sur l'output
 
 Pour tester mon code, j'ai simplement fait envoyer par les différents processeurs le message "Hello world !", et lorsque un processeur recevait un message, il affichait le message reçu,
 son rang et le rang du processeur ayant envoyé le message. Ainsi, je vérifiais "à la main" les résultats que j'avais obtenus en regardant si c'était cohérent avec ce qui m'étais demandé...
@@ -166,70 +166,98 @@ exercises.o: exercises.cpp
 	$(CC) $(CFLAGS) exercises.cpp -o exercises.o
 clean:
 	rm $(OBJS) tp2
-1: tp2
-	mpirun tp2 1
-2: tp2
-	mpirun tp2 2
-3: tp2
-	mpirun tp2 3
+cleanoutput:
+        rm Michel_TP2-*
 #+end_src
 ** Diffusion séquentielle
-Voilà l'output du programme de la diffusion séquentielle:
+Voilà l'output du programme de la diffusion séquentielle pour une exécution locale:
 #+begin_src sh :results output :exports output
-  module load mpi
-  make 1
+  make
+  mpirun tp2 1
 #+end_src
 
 #+RESULTS:
 : mpic++ -c -g -Wall exercises.cpp -o exercises.o
 : mpic++ exercises.o main.cpp -o tp2
-: mpirun tp2 1
-: Message received by processor 1 from processor 0: Hello world !
-: Message received by processor 2 from processor 0: Hello world !
-: Message received by processor 3 from processor 0: Hello world !
+: Message received by processor 1 from processor 0: Hello world !
+: Message received by processor 2 from processor 0: Hello world !
+: Message received by processor 3 from processor 0: Hello world !
 
 Ici, on veut que notre processeur 0 envoie un message aux autres processeurs... On peut remarquer avec l'output que notre objectif a bien été atteint,
 car on a bien le processeur 0 qui envoie un message à tous les autres processeurs.
 
 ** Anneau séquentiel
 
-Voilà l'output de l'anneau séquentiel
+Voilà l'output de l'anneau séquentiel pour une exécution locale:
 
 #+begin_src sh :results output :exports output
-  module load mpi
-  make 2
+  make
+  mpirun tp2 2
 #+end_src
 
 #+RESULTS:
-: mpirun tp2 2
-: Processor 3 receive from processor 2 the message: Hello World !
-: Processor 2 receive from processor 1 the message: Hello World !
-: Processor 1 receive from processor 0 the message: Hello World !
-: Processor 0 receive from processor 3 the message: Hello World !
+: Processor 3 receive from processor 2 the message: Hello World !
+: Processor 2 receive from processor 1 the message: Hello World !
+: Processor 1 receive from processor 0 the message: Hello World !
+: Processor 0 receive from processor 3 the message: Hello World !
 
 Ici, on peut voir que le processeur 1 a envoyé un message au processeur 2, qui a envoyé un message au processeur 3 etc... Cela fait bien un cycle, donc on est content du résultat obtenu.
 
 ** Diffusion HyperCube
 
-Voilà l'output de la diffusion HyperCube
+Voilà l'output de la diffusion HyperCube, exécutée de nouveau localement.
 #+begin_src sh :results output :exports output
-  module load mpi
-  make 3
+  make
+  mpirun tp2 3
 #+end_src
 
 #+RESULTS:
-: mpirun tp2 3
-: Processor 0 received Hello world ! from processor 1
-: Processor 2 received Hello world ! from processor 3
-: Processor 0 received Hello world ! from processor 2
-: Processor 1 received Hello world ! from processor 3
+: Processor 0 received Hello world ! from processor 1
+: Processor 2 received Hello world ! from processor 3
+: Processor 0 received Hello world ! from processor 2
+: Processor 1 received Hello world ! from processor 3
 
 
 Ici, notre masque est d'abord égal à $001$. Donc le processeur $001 = 1$ envoie un message au processeur $000 = 0$ et le processeur $011 = 3$ envoie un message au processeur $010 = 2$.
 Puis notre masque est égal à $010$. Donc le processeur $010 = 2$ envoie un message au processeur $000 = 0$ et le processeur $011 = 3$ envoie un message au processeur $001 = 1$.
 Notre output est bien ce qu'on attend, donc on est content.
 
-* Commentaires sur l'output
+Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon on va avoir une erreur, car tous les processeurs doivent travailler deux à deux, tandis qu'avec la diffusion séquentielle, on n'a pas besoin d'avoir un nombre pair de processeurs, ni dans l'anneau séquentiel.
 
-Pour la diffusion HyperCube, il faut avoir un nombre pair de processeurs, sinon on va avoir une erreur, car tous les processeurs doivent travailler deux à deux.
-Plus on a de processeurs, plus le temps d'exécution est long.................
+* Difficultés
+
+Au début, j'ai eu des difficultés à faire tourner mon programme sur baobab, mais le compiler directement sur baobab en important le module foss et l'exécuter avec le script run.sh a résolu partiellement le problème...
+J'ai dû ajouter dans mon script run.sh l'option --mpi=pmi2 à srun pour que cela marche effectivement. Voilà le contenu du script utilisé pour lancer le programme sur baobab:
+
+#+begin_src sh
+  #!/bin/sh
+  #SBATCH --job-name=Michel_TP2          # Permit us to find easily our job
+  #SBATCH --output Michel_TP2-out.o%j    # Outputs will be written here
+  #SBATCH --error Michel_TP2-err.e%j     # Errors will be written here
+  #SBATCH --ntasks 16                    # Number of tasks in our job
+  #SBATCH --cpus-per-task 1              # Number of cpus per tasks
+  #SBATCH --partition debug-cpu          # Partition to use
+  #SBATCH --time 15:00                   # Maximum time execution
+
+  module load foss
+  module load CUDA
+
+  echo $SLURM_NODELIST
+  mytime=$date
+  srun --mpi=pmi2 ./tp2 $1
+  mytime=$($mytime - $date)
+  echo $mytime
+#+end_src
+
+Il faut donner le numéro de l'exercice qu'on veut exécuter en paramètre au script pour que
+celui-ci fonctionne. Cela donnera par exemple:
+#+begin_src sh
+sbatch run.sh 1
+#+end_src
+On aura comme output 2 fichiers: un fichier nommé Michel_TP2-out.o%j et un fichier contenant
+les erreurs nommé Michel_TP2-err.o%j. Si on ouvre le fichier, on peut avoir les informations
+de l'output de notre programme exécuté sur les n processeurs.
+
+
+
+
