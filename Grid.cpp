@@ -9,9 +9,10 @@ using namespace std;
 Grid::Grid(int x, int y) {
     rows = x;
     columns = y;
-    grid = new double * [rows];
+    grid.resize(rows);
+    grid_line.resize(rows * columns);
     for (int i = 0; i < rows; i++) {
-        grid[i] = new double [columns];
+        grid[i].resize(columns);
         for (int j = 0; j < columns; j++) {
             if (i == 0 || i == rows - 1 || j == 0 || j == columns - 1) {
                 grid[i][j] = 1.0;
@@ -55,7 +56,7 @@ double Grid::get_max() {
     return max;
 }
 
-Grid Grid::next_step() {
+void Grid::next_step() {
     double hx = 1./rows;
     double hy = 1./columns;
     double C = 1.;
@@ -74,7 +75,7 @@ Grid Grid::next_step() {
             newgrid.grid[i][j] = weightx*(grid[i-1][j] + grid[i+1][j] + grid[i][j]*diagx) + weighty*(grid[i][j-1] + grid[i][j+1] + grid[i][j]*diagy);
 				}
     }
-    return newgrid;
+    grid.swap(newgrid.grid);
 }
 
 void Grid::swap(Grid grid_2) {
@@ -82,21 +83,13 @@ void Grid::swap(Grid grid_2) {
         cerr << "Error of shape between two grids in swap() !" << endl;
         return;
     }
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            grid[i][j] = grid_2.grid[i][j];
-        }
-    }
+    grid.swap(grid_2.grid);
 }
 
-Grid Grid::state_grid_after_time(int time) {
-    write_to_bmp(*this, 0);
+void Grid::state_grid_after_time(int time) {
     for (int i = 0; i < time; i++) {
-        auto newgrid = next_step();
-        write_to_bmp(*this, i + 1);
-        swap(newgrid);
+        next_step();
     }
-    return *this;
 }
 
 
