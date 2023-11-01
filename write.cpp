@@ -17,8 +17,8 @@ void write_to_bmp(Grid data, int iter)
                                 0, 0,  0, 0,
                                 1, 0, 24, 0 };
 
-    int width = data.get_rows();
-    int height = data.get_columns();
+    int width = data.rows;
+    int height = data.columns;
 
     int padding = (4 - (width * 3) % 4) % 4;
 
@@ -36,7 +36,7 @@ void write_to_bmp(Grid data, int iter)
     for(int iX = 0; iX < width; iX++){
         for(int iY = 0; iY < height; iY++){
             // Restrain the value to be plotted to [0, 1]
-            double value = ((data.grid[iY][iX] - data.get_min()) / (data.get_max() - data.get_min()));
+            double value = ((data.grid_1[iY][iX] - data.get_min()) / (data.get_max() - data.get_min()));
             double r = 0., g = 0., b = 0.;
             // For good visibility, use a color scheme that goes from black-blue to black-red.
             if (value <= 1./8.) {
