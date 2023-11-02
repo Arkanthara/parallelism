@@ -13,6 +13,8 @@ class Grid {
     Grid(int x, int y);
     int get_index(int i, int j);
     int * get_index(int n);
+    double get_value(int n);
+    double get_value(int i, int j);
     double get_min();
     double get_max();
     void print_grid(void);

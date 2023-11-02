@@ -16,5 +16,5 @@ int main(int argc, char * argv[]) {
     // cout << "Indice " << n << " Indices " << indices[0] << indices[1] << endl;
     grid.state_grid_after_time(atoi(argv[2]));
     grid.print_grid();
-    // write_to_bmp(grid, atoi(argv[2]));
+    write_to_bmp(grid, atoi(argv[2]));
 }
