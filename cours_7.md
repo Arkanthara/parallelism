@@ -66,3 +66,64 @@ fetch (prend l'instruction en mémoire) -> decode -> execute -> write-bach (rés
 
 Avec ce pipeline, plusieurs instructions sont traitées en même temps, bien qu'à des stades différents.
 On dit alors que le CPI = 1 (Cycle Per Instruction)
+
+Un aspect ILP est la précence de plusieurs unités d'exécution utilisables en même temps
+On a une approche qu'on peut désigner comme "very long instruction word": on sépare l'instruction en plusieurs sous instructions.
+C'est le compilateur qui construit ce VLIW (very long instruction word).
+Si nécessaire, certaines de ces instrucitons sont des NOP (no operation) s'il n'y a pas de parallélisme à disposition, ou s'il y a des dépendances.
+
+__Il y a aussi une version plus élaborée, appelée superscalavité où c'est le matériell directement qui gère le parallélisme, au moyen du principe "data-flow":__
+On a des stations de réservation d'instruction.
+Les instructions viennent s'empiler dans les stations de réservation correspondantes et elles sont exécutées dès que leurs opérandes sont disponibles.
+Les dépendances entre données sont résolues par le fait que si les données sont disponibles, elles sont utilisables.
+
+Il est important de se rendre compte que certaines instructions, comme un branchement, peuvent être problématiques car elles peuvent casser le pipeline.
+$\rightarrow$ Branchement spéculatif: processeur fait un choix aléatoire de quelle branche il va prendre, et s'il se trompe, il retourne en arrière.
+Branchement spéculatif statique: deviner quelle branche on va prendre grâce à la façon de programmer des personnes.
+Techniques plus dynamiques: sur chaque branchement, on prend celle de gauche ou celle de droite, et chaque fois qu'on réussi, on augmente les chances de prendre
+le côté qu'on avait choisit et vice-versa.
+
+sisc vs risk: sisc instructions peut faire plusieurs choses à la fois. risk: on fait des instructions simples et si on veut faire une chose plus complexe, on fait une
+combinaison d'instructions simples.
+Tendance d'avoir plus d'instructions par cycles plutôt que d'avoir des instructions complexes par cycle...
+
+# Réseaux d'interconnexions
+
+## 3.1 Introduction
+
+C'est ce qui permet aux processeurs de communiquer, et c'est donc une partie essentielle d'une architecture parallèle, si on veut des performances.
+
+On va voir qu'il y a des réseaux d'interconnexion dits statiques ou dynamiques. (statiques fait penser plutôt à un graphe, alors que dynamiques fait plutôt penser à un
+gros switch ou commutateur.)
+
+### Valeurs de communication
+__Bande passante CPU-mémoire:__ 37GB/s en 2012 vs 95 GB/s en 2020
+__Temps de latence:__ 150 ns (2012) vs 50 ns (2020)
+
+__Liens entre PE:__
+- 2GB/s par liens
+- 10 liens par PE
+(C'était IBM BGQ en 2012)
+
+__Infiniband:__ 100GB/s latence 1 $\mu$s (comme dans baobab)
+
+Il faut aussi se rappeler que dans un ordinateur, il y a une hiérarchie de composantes, et des vitesses qui le reflètent.
+registres -> mémoire cache -> mémoire centrale
+-> interconnexion entre PE -> accès disque
+
+### Propriétés associées aux réseaux d'interconnexion
+- Diamètre: Distance qui sépare des noeud les plus éloignés, mesuré en nombre d'étapes pour y accéder. C'est la distance entre les 2 noeuds les plus éloignés, compté
+  en nombre de noeuds à traverser.
+  Ce qui nous intéresse, c'est le lien entre le diamètre et le nombre n de PE $O(f(n))$
+- Latence: temps pour accéder à un composant plus le temps pour préparer le message. (cela se mesure en $\mu$s)
+- Bandwidth ou bande passante: mesure le débit de l'échange des données (GB/s)
+- Largeur bisectionnelle: c'est le nombre de liens qui relie les 2 moitiés d'une même machine.
+  (Il faut s'imaginer qu'on sectionne une ville en deux par une rivière, et on compte le nombre de ponts faisant le lien entre les deux parties de la ville)
+  Ici aussi on s'intéresse à cette valeur de façon asymptotique avec n le nombre de noeuds.
+- Degré: le nombre de liens qui part de chaque PE vers un autre.
+- Prix ou complexité: c'est la relation entre le prix et le nombre de PE. Prix = O(n)
+- Scalabilité (passage à l'échelle): C'est le lien entre le nombre de PE et la performance espérée. On aimerait que cela soit proportionnel.
+
+Ces réseaux sont caractérisés par des algorithmes de routage. Ces algorithmes doivent exploiter la topologie d'interconnexion pour être optimaux.
+Ils sont asynchrones (Chaque message va à son propre rythme...), ils doivent garantir l'absence de "deadlocks"
+Ils peuvent être multi-port (potentiellement, plusieurs messages en même temps sur tous les liens) ou single-port (un port à la fois).
