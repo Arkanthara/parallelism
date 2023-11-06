@@ -20,6 +20,7 @@ class Grid {
     void print_grid(void);
     void next_step(void);
     void state_grid_after_time(int time);
+    void paralellized_state_grid_after_time(int time);
 };
 
 #endif

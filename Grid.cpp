@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Grid.h"
 #include "write.h"
+#include <mpi.h>
 
 
 using namespace std;
@@ -84,6 +85,34 @@ void Grid::next_step() {
 		}
     }
     swap(grid_2, grid_1);
+}
+
+double Grid::calculate_element(int i, int j) {
+   	double hx = 1./rows;
+    	double hy = 1./columns;
+    	double C = 1.e-6;
+    	double dt = 1.;
+    	double diagx = -2.0 + hx*hx/(2*C*dt);
+	double diagy = -2.0 + hy*hy/(2*C*dt);
+   	double weightx = C*dt/(hx*hx);
+    	double weighty = C*dt/(hy*hy);
+	return weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
+}
+
+void Grid::parallelized_state_grid_after_time(int time) {
+	// Initialize MPI
+	MPI_Init(NULL, NULL);
+
+	// Get rank of process and number of process
+	int rank = 0;
+	int world_size = 0;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+	
+
+	// Destroy MPI environment
+	MPI_Finalize();
 }
 
 void Grid::state_grid_after_time(int time) {
