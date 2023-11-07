@@ -7,7 +7,7 @@ class Grid {
     public:
     int rows;
     int columns;
-    std::vector<double> grid_line;
+    std::vector<double>  grid_line;
     std::vector<std::vector<double>> grid_1;
     std::vector<std::vector<double>> grid_2;
     Grid(int x, int y);
@@ -18,9 +18,10 @@ class Grid {
     double get_min();
     double get_max();
     void print_grid(void);
+    void print_line_grid(void);
     void next_step(void);
     void state_grid_after_time(int time);
-    void paralellized_state_grid_after_time(int time);
+    double calculate_element(int n);
 };
 
 #endif

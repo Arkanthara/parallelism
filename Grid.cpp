@@ -1,13 +1,12 @@
 #include <iostream>
-#include "Grid.h"
+//#include "Grid.h"
 #include "write.h"
-#include <mpi.h>
 
 
 using namespace std;
 
  
-Grid::Grid(int x, int y) {
+std::vector<std::vector<double>> create_grid(int x, int y) {
     rows = x;
     columns = y;
     grid_1.resize(rows);
@@ -25,7 +24,7 @@ Grid::Grid(int x, int y) {
             else {
                 grid_1[i][j] = 0.;
                 grid_2[i][j] = 0.;
-		grid_line[get_index(i, j)] = 0.
+		grid_line[get_index(i, j)] = 0.;
             }
         }
     }
@@ -107,41 +106,6 @@ double Grid::calculate_element(int n) {
 	return weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
 }
 
-void Grid::parallelized_state_grid_after_time(int time) {
-	// Initialize MPI
-	MPI_Init(NULL, NULL);
-
-	// Get rank of process and number of process
-	int rank = 0;
-	int world_size = 0;
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-	if (rows * columns % world_size != 0) {
-		cerr << "Error ! The grid is not divisible by the number of porcess ! " << endl;
-		exit(EXIT_FAILURE);
-	}
-
-	int nb_elements_to_compute = rows * columns / world_size;
-
-	vector<double> recvbuf(nb_elements_to_compute, 1.);
-
-	int recvcount = 0;
-
-	MPI_Scatter(&grid_line, rows*columns / world_size, MPI_DOUBLE, &recvbuf, recvcount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-	for (int i = 0; i < recvcount; i++) {
-		cout << "Coucou from process" << rank << endl;
-	}
-
-
-
-	
-
-	// Destroy MPI environment
-	MPI_Finalize();
-}
-
 void Grid::state_grid_after_time(int time) {
     for (int i = 0; i < time; i++) {
         next_step();
@@ -156,4 +120,11 @@ void Grid::print_grid() {
         }
         cout << endl;
     }
+}
+
+void Grid::print_line_grid() {
+	for (int i = 0; i < rows * columns; i++) {
+		cout << grid_line[i] << " ";
+	}
+	cout << endl;
 }
