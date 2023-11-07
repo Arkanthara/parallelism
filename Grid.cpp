@@ -20,10 +20,12 @@ Grid::Grid(int x, int y) {
             if (i == 0 || i == rows - 1 || j == 0 || j == columns - 1) {
                 grid_1[i][j] = 1.;
                 grid_2[i][j] = 1.;
+		grid_line[get_index(i, j)] = 1.;
             }
             else {
                 grid_1[i][j] = 0.;
                 grid_2[i][j] = 0.;
+		grid_line[get_index(i, j)] = 0.
             }
         }
     }
@@ -87,7 +89,13 @@ void Grid::next_step() {
     swap(grid_2, grid_1);
 }
 
-double Grid::calculate_element(int i, int j) {
+double Grid::calculate_element(int n) {
+	auto tmp = get_index(n);
+	int i = tmp[0];
+	int j = tmp[1];
+	if (i == rows || j == columns) {
+		return 1.;
+	}
    	double hx = 1./rows;
     	double hy = 1./columns;
     	double C = 1.e-6;
@@ -108,6 +116,25 @@ void Grid::parallelized_state_grid_after_time(int time) {
 	int world_size = 0;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+	if (rows * columns % world_size != 0) {
+		cerr << "Error ! The grid is not divisible by the number of porcess ! " << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	int nb_elements_to_compute = rows * columns / world_size;
+
+	vector<double> recvbuf(nb_elements_to_compute, 1.);
+
+	int recvcount = 0;
+
+	MPI_Scatter(&grid_line, rows*columns / world_size, MPI_DOUBLE, &recvbuf, recvcount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+	for (int i = 0; i < recvcount; i++) {
+		cout << "Coucou from process" << rank << endl;
+	}
+
+
 
 	
 

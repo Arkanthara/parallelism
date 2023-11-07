@@ -1,4 +1,4 @@
-CC = g++
+CC = mpic++
 CFLAGS = -g -Wall -c
 OBJS = Grid.o write.o
 .PHONY = clean cleanbmp
