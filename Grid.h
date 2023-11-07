@@ -10,4 +10,6 @@ vector<double> create_grid(int size);
 void print_grid(vector<double> grid, int size);
 
 double compute_element(int n, vector<double> grid, int size);
+vector<double> first_column(vector<double> grid, int size);
+vector<double> last_column(vector<double> grid, int size);
 #endif

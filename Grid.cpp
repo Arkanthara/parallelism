@@ -1,5 +1,4 @@
 #include <iostream>
-//#include "Grid.h"
 #include <vector>
 #include <cmath>
 
@@ -9,6 +8,8 @@ using std::vector;
 int get_index(int i, int j, int size) {
     return i*size + j;
 }
+
+// Function used to create a square grid, given as an 1D vector
 vector<double> create_grid(int size) {
 	vector<double> grid(size*size, 0.);
 	for (int i = 0; i < size; i++) {
@@ -22,80 +23,90 @@ vector<double> create_grid(int size) {
 	return grid;
 }
 
-
+// Function used to convert index of 1D grid to 2D grid
 int * get_index(int n, int size) {
-	int j = n % size;
-	int i = (n - j - 1) % size;
+	int i = n % size;
+	int j = n / size;
 	int * result = new int[2];
 	result[0] = i;
 	result[1] = j;
 	return result;
 }
 
-double get_min(vector<vector<double>> grid) {
-	double min = grid[0][0];
-	for (int i = 0; i < grid.size(); i++) {
-		for (int j = 0; j < grid[0].size(); j++) {
-			if (grid[i][j] < min) {
-				min = grid[i][j];
-			}
-		}
+
+// Function that gives us the first column of a given grid, and a given size of column
+vector<double> first_column(vector<double> grid, int size) {
+	vector<double> result(size, 0.);
+	for (int i = 0; i < size; i++) {
+		result[i] = grid[i];
 	}
-	return min;
-}
-double get_max(vector<vector<double>> grid) {
-	double max = grid[0][0];
-	for (int i = 0; i < grid.size(); i++) {
-		for (int j = 0; j < grid[0].size(); j++) {
-			if (grid[i][j] > max) {
-				max = grid[i][j];
-			}
-		}
-	}
-	return max;
+	return result;
 }
 
-// void next_step() {
-//     double hx = 1./rows;
-//     double hy = 1./columns;
-//     double C = 1.e-6;
-//     double dt = 1.;
-//     
-//     double diagx = -2.0 + hx*hx/(2*C*dt);
-// 	double diagy = -2.0 + hy*hy/(2*C*dt);
-//     double weightx = C*dt/(hx*hx);
-//     double weighty = C*dt/(hy*hy);
-// 	/* Perform an explicit update on the points within the domain.
-// 	* Optimization : inner loop on columns index (second index) since
-// 	* C++ is row major */
-//     for (int i = 1; i < rows - 1; i++) {
-//         for (int j = 1; j < columns - 1; j++) {
-//             grid_2[i][j] = weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
+// Function that gives us the last column of a given grid, and a given size of column
+vector<double> last_column(vector<double> grid, int size) {
+	vector<double> result(size, 0.);
+	int n = grid.size();
+	for (int i = 1; i <= size; i++) {
+		result[size - i] = grid[n - i];
+	}
+	return result;
+}
+
+// double get_min(vector<vector<double>> grid) {
+// 	double min = grid[0][0];
+// 	for (int i = 0; i < grid.size(); i++) {
+// 		for (int j = 0; j < grid[0].size(); j++) {
+// 			if (grid[i][j] < min) {
+// 				min = grid[i][j];
+// 			}
 // 		}
-//     }
-//     swap(grid_2, grid_1);
+// 	}
+// 	return min;
+// }
+// double get_max(vector<vector<double>> grid) {
+// 	double max = grid[0][0];
+// 	for (int i = 0; i < grid.size(); i++) {
+// 		for (int j = 0; j < grid[0].size(); j++) {
+// 			if (grid[i][j] > max) {
+// 				max = grid[i][j];
+// 			}
+// 		}
+// 	}
+// 	return max;
 // }
 
+// This function compute the n eme element of a 1D given grid, with a size given
 double compute_element(int n, vector<double> grid, int size) {
+
+	// I convert n index to 2D index
  	auto tmp = get_index(n, size);
  	int i = tmp[0];
  	int j = tmp[1];
+
+	// I verify that we must compute the given value
  	if (i == size - 1 || j == size - 1 || i == 0 || j == 0) {
  		return 1.;
  	}
-    	double hx = 1./size;
-     	double hy = 1./size;
-     	double C = 1.e-6;
-     	double dt = 1.;
-     	double diagx = -2.0 + hx*hx/(2*C*dt);
- 	double diagy = -2.0 + hy*hy/(2*C*dt);
-    	double weightx = C*dt/(hx*hx);
-     	double weighty = C*dt/(hy*hy);
- 	return weightx*(grid[get_index(i-1, j, size)] + grid[get_index(i+1, j, size)] + grid[get_index(i, j*diagx, size)]) + weighty*(grid[get_index(i, j-1, size)] + grid[get_index(i, j+1, size)] + grid[get_index(i, j*diagy, size)]);
+
+	// I applie the given function
+	auto hx = 1./size;
+	auto hy = 1./size;
+	
+	auto C = 1.;
+	
+	auto dt = 0.25*hx*hx/C;
+	
+	auto diagx = -2.0 + hx*hx/(2*C*dt);
+	auto diagy = -2.0 + hy*hy/(2*C*dt);
+	auto weightx = C*dt/(hx*hx);
+	auto weighty = C*dt/(hy*hy);
+	
+	 return weightx*(grid[i-1 + j*size] + grid[i+1 + j * size] + grid[i + j*size] * diagx) + weighty*(grid[i + (j-1) * size] + grid[i + (j+1) * size] + grid[i + j * size]*diagy);
 }
 				
 
-
+// This function print our 1D vector as a 2D vector for a given size
 void print_grid(vector<double> grid, int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -104,11 +115,4 @@ void print_grid(vector<double> grid, int size) {
         }
         cout << endl;
     }
-}
-
-void print_line_grid(vector<double> grid) {
-	for (int i = 0; i < grid.size(); i++) {
-		cout << grid[i] << " ";
-	}
-	cout << endl;
 }
