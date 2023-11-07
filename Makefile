@@ -1,6 +1,6 @@
 CC = mpic++
 CFLAGS = -g -Wall -c
-OBJS = Grid.o write.o
+OBJS = Grid.o
 .PHONY = clean cleanbmp
 
 tp3: main.cpp $(OBJS)

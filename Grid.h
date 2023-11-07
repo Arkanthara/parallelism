@@ -3,25 +3,11 @@
 
 #include <vector>
 
-class Grid {
-    public:
-    int rows;
-    int columns;
-    std::vector<double>  grid_line;
-    std::vector<std::vector<double>> grid_1;
-    std::vector<std::vector<double>> grid_2;
-    Grid(int x, int y);
-    int get_index(int i, int j);
-    int * get_index(int n);
-    double get_value(int n);
-    double get_value(int i, int j);
-    double get_min();
-    double get_max();
-    void print_grid(void);
-    void print_line_grid(void);
-    void next_step(void);
-    void state_grid_after_time(int time);
-    double calculate_element(int n);
-};
+using namespace std;
+using std::vector;
+vector<double> create_grid(int size);
 
+void print_grid(vector<double> grid, int size);
+
+double compute_element(int n, vector<double> grid, int size);
 #endif

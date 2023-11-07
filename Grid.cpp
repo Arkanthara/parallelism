@@ -1,130 +1,114 @@
 #include <iostream>
 //#include "Grid.h"
-#include "write.h"
-
+#include <vector>
+#include <cmath>
 
 using namespace std;
-
+using std::vector;
  
-std::vector<std::vector<double>> create_grid(int x, int y) {
-    rows = x;
-    columns = y;
-    grid_1.resize(rows);
-    grid_2.resize(rows);
-    grid_line.resize(rows * columns);
-    for (int i = 0; i < rows; i++) {
-        grid_1[i].resize(columns);
-        grid_2[i].resize(rows);
-        for (int j = 0; j < columns; j++) {
-            if (i == 0 || i == rows - 1 || j == 0 || j == columns - 1) {
-                grid_1[i][j] = 1.;
-                grid_2[i][j] = 1.;
-		grid_line[get_index(i, j)] = 1.;
-            }
-            else {
-                grid_1[i][j] = 0.;
-                grid_2[i][j] = 0.;
-		grid_line[get_index(i, j)] = 0.;
-            }
-        }
-    }
+int get_index(int i, int j, int size) {
+    return i*size + j;
 }
-
-int Grid::get_index(int i, int j) {
-    return i*columns + j;
-}
-
-int * Grid::get_index(int n) {
-    int j = n % columns;
-    int i = (n - j - 1) % rows;
-    int * result = new int[2];
-    result[0] = i;
-    result[1] = j;
-    return result;
-}
-
-double Grid::get_min() {
-    double min = grid_1[0][0];
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            if (grid_1[i][j] < min) {
-                min = grid_1[i][j];
-            }
-        }
-    }
-    return min;
-}
-
-double Grid::get_max() {
-    double max = grid_1[0][0];
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            if (grid_1[i][j] > max) {
-                max = grid_1[i][j];
-            }
-        }
-    }
-    return max;
-}
-
-void Grid::next_step() {
-    double hx = 1./rows;
-    double hy = 1./columns;
-    double C = 1.e-6;
-    double dt = 1.;
-    
-    double diagx = -2.0 + hx*hx/(2*C*dt);
-	double diagy = -2.0 + hy*hy/(2*C*dt);
-    double weightx = C*dt/(hx*hx);
-    double weighty = C*dt/(hy*hy);
-	/* Perform an explicit update on the points within the domain.
-	* Optimization : inner loop on columns index (second index) since
-	* C++ is row major */
-    for (int i = 1; i < rows - 1; i++) {
-        for (int j = 1; j < columns - 1; j++) {
-            grid_2[i][j] = weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
+vector<double> create_grid(int size) {
+	vector<double> grid(size*size, 0.);
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			if (i == 0 || i == size - 1 || j == 0 || j == size - 1) {
+				int index = get_index(i, j, size);
+				grid[index] = 1.;
+			}
 		}
-    }
-    swap(grid_2, grid_1);
-}
-
-double Grid::calculate_element(int n) {
-	auto tmp = get_index(n);
-	int i = tmp[0];
-	int j = tmp[1];
-	if (i == rows || j == columns) {
-		return 1.;
 	}
-   	double hx = 1./rows;
-    	double hy = 1./columns;
-    	double C = 1.e-6;
-    	double dt = 1.;
-    	double diagx = -2.0 + hx*hx/(2*C*dt);
-	double diagy = -2.0 + hy*hy/(2*C*dt);
-   	double weightx = C*dt/(hx*hx);
-    	double weighty = C*dt/(hy*hy);
-	return weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
-}
-
-void Grid::state_grid_after_time(int time) {
-    for (int i = 0; i < time; i++) {
-        next_step();
-    }
+	return grid;
 }
 
 
-void Grid::print_grid() {
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            cout << grid_1[i][j] << " ";
+int * get_index(int n, int size) {
+	int j = n % size;
+	int i = (n - j - 1) % size;
+	int * result = new int[2];
+	result[0] = i;
+	result[1] = j;
+	return result;
+}
+
+double get_min(vector<vector<double>> grid) {
+	double min = grid[0][0];
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[0].size(); j++) {
+			if (grid[i][j] < min) {
+				min = grid[i][j];
+			}
+		}
+	}
+	return min;
+}
+double get_max(vector<vector<double>> grid) {
+	double max = grid[0][0];
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[0].size(); j++) {
+			if (grid[i][j] > max) {
+				max = grid[i][j];
+			}
+		}
+	}
+	return max;
+}
+
+// void next_step() {
+//     double hx = 1./rows;
+//     double hy = 1./columns;
+//     double C = 1.e-6;
+//     double dt = 1.;
+//     
+//     double diagx = -2.0 + hx*hx/(2*C*dt);
+// 	double diagy = -2.0 + hy*hy/(2*C*dt);
+//     double weightx = C*dt/(hx*hx);
+//     double weighty = C*dt/(hy*hy);
+// 	/* Perform an explicit update on the points within the domain.
+// 	* Optimization : inner loop on columns index (second index) since
+// 	* C++ is row major */
+//     for (int i = 1; i < rows - 1; i++) {
+//         for (int j = 1; j < columns - 1; j++) {
+//             grid_2[i][j] = weightx*(grid_1[i-1][j] + grid_1[i+1][j] + grid_1[i][j]*diagx) + weighty*(grid_1[i][j-1] + grid_1[i][j+1] + grid_1[i][j]*diagy);
+// 		}
+//     }
+//     swap(grid_2, grid_1);
+// }
+
+double compute_element(int n, vector<double> grid, int size) {
+ 	auto tmp = get_index(n, size);
+ 	int i = tmp[0];
+ 	int j = tmp[1];
+ 	if (i == size - 1 || j == size - 1 || i == 0 || j == 0) {
+ 		return 1.;
+ 	}
+    	double hx = 1./size;
+     	double hy = 1./size;
+     	double C = 1.e-6;
+     	double dt = 1.;
+     	double diagx = -2.0 + hx*hx/(2*C*dt);
+ 	double diagy = -2.0 + hy*hy/(2*C*dt);
+    	double weightx = C*dt/(hx*hx);
+     	double weighty = C*dt/(hy*hy);
+ 	return weightx*(grid[get_index(i-1, j, size)] + grid[get_index(i+1, j, size)] + grid[get_index(i, j*diagx, size)]) + weighty*(grid[get_index(i, j-1, size)] + grid[get_index(i, j+1, size)] + grid[get_index(i, j*diagy, size)]);
+}
+				
+
+
+void print_grid(vector<double> grid, int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+		int index = get_index(i, j, size);
+            cout << grid[index] << " ";
         }
         cout << endl;
     }
 }
 
-void Grid::print_line_grid() {
-	for (int i = 0; i < rows * columns; i++) {
-		cout << grid_line[i] << " ";
+void print_line_grid(vector<double> grid) {
+	for (int i = 0; i < grid.size(); i++) {
+		cout << grid[i] << " ";
 	}
 	cout << endl;
 }
