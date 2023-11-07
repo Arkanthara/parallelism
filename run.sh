@@ -17,8 +17,8 @@ echo $SLURM_NODELIST
 make
 # Run program. If the parameter is not given to execute an exercise, we print an error which will be in ./err/Michel_TP2-err.e%j
 # Else, we execute program
-if [ -n $1 ]; then
-	echo "Error ! Usage of the script: ./run.sh [number of the exercise]" 1>&2
-else
+if [ -n "$1" ]; then
 	srun --mpi=pmi2 ./tp2 $1
+else
+	echo "Error ! Usage of the script: ./run.sh [number of the exercise]" 1>&2
 fi
