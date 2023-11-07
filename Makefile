@@ -20,3 +20,6 @@ clean:
 
 cleanbmp:
 	rm T_*
+
+cleanoutput:
+	rm ./err/* ./out/*
