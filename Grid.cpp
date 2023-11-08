@@ -53,7 +53,7 @@ vector<double> last_column(vector<double> grid, int size) {
 	return result;
 }
 
-// double get_min(vector<vector<double>> grid) {
+// double get_min(vector<double>> grid) {
 // 	double min = grid[0][0];
 // 	for (int i = 0; i < grid.size(); i++) {
 // 		for (int j = 0; j < grid[0].size(); j++) {

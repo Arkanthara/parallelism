@@ -2,6 +2,7 @@
 #include "Grid.h"
 #include <vector>
 #include <mpi.h>
+#include "writer.h"
 
 // Here I include algorithm to reverse some vectors
 #include <algorithm>
@@ -19,7 +20,7 @@ int main(int argc, char * argv[]) {
 	MPI_Request top_request , bottom_request ;
 
 	// We verify that the user give us the size of the grid and the time to calculate state of the grid
-	if (argc <  2) {
+	if (argc !=  3) {
 		cerr << "Error ! Usage: ./tp3 grid_dimension time" << endl;
 		return -1;
 	}
@@ -35,6 +36,12 @@ int main(int argc, char * argv[]) {
 	// Get the size given by the user. If atoi has an error, it return 0... We verify that the size is correct 
 	int size = atoi(argv[1]);
 	if (size <= 0) {
+		cerr << "Bad size ! Usage: ./tp3 size time" << endl;
+		return -1;
+	}
+
+	int time = atoi(argv[2]);
+	if (time <= 0) {
 		cerr << "Bad size ! Usage: ./tp3 size time" << endl;
 		return -1;
 	}
@@ -55,7 +62,7 @@ int main(int argc, char * argv[]) {
 		grid = create_grid(size);
 
 		// Then I print the grid like a 2D vector
-		print_grid(grid, size);
+		// print_grid(grid, size);
 	}
 
 	// This variable indicates us how many columns we'd have per processor
@@ -63,6 +70,8 @@ int main(int argc, char * argv[]) {
 
 	// We prepare a buffer to receive datas send by processor 0
 	vector<double>  recvbuf(size*nb_columns, 0.);
+
+	for (int i = 0; i < time; i++) {
 
 	// Can I put the scatter method just in processor 0 ?
 	// We send chunks of an array to differents processors
@@ -108,29 +117,29 @@ int main(int argc, char * argv[]) {
 		recvbuf.insert(recvbuf.end(), tmp_2.begin(), tmp_2.end());
 	}
 
-	// If we are in the last processor, because of my way to compute the result, I need to reverse the vector to skip the first column...
-	// So I reverse the vector thanks to the method given by the #include<algorithm>, and I have to reverse later the vector to keep the right order...
-	if (rank == world_size - 1) {
-		reverse(recvbuf.begin(), recvbuf.end());
-		index = 0;
-	}
-
 	// Here, we compute the result, with a shift if needed
-	for (int i = 0; i < size*nb_columns; i++) {
-		newgridline[i] = compute_element(i + index, recvbuf, size);
-	}
-
-	// We reverse our vector to keep the right order
+	// If we are in the last processor, we don't have to compute the last column, so we skip it...
 	if (rank == world_size - 1) {
-		reverse(newgridline.begin(), newgridline.end());
+		for (int i = 0; i < size*nb_columns - size; i++) {
+			newgridline[i] = compute_element(i + index, recvbuf, size);
+		}
+	}
+	else {
+		for (int i = 0; i < size*nb_columns; i++) {
+			newgridline[i] = compute_element(i + index, recvbuf, size);
+		}
 	}
 
 	// Here, we keep all datas of processors and the processor 0 put them into the result vector
 	MPI_Gather(newgridline.data(), nb_columns * size, MPI_DOUBLE, grid.data(), nb_columns * size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	
+	}
 
 	// As it's the processor 0 which claimed datas, we just print the result if we are in processor 0...
 	if (rank == 0) {
-		print_grid(grid, size);
+//		print_grid(grid, size);
+		write_to_bmp(size, grid, time, *min_element(grid.begin(), grid.end()), *max_element(grid.begin(), grid.end()));
+
 	}	
 
 	// Destroy MPI environment
