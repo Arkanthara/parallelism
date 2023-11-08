@@ -1,0 +1,16 @@
+#+TITLE: TP2 MPI
+#+AUTHOR: Michel Donnet
+#+DATE: \today
+
+\pagebreak
+
+* Explication du code
+
+Mon code est composé d'un fichier main.cpp, d'un fichier Grid.cpp avec son header Grid.h,
+et d'un fichier writer.cpp avec son header writer.h. Un makefile est présent pour compiler le tout.
+
+J'ai décidé de créer une grille à 1 dimension pour mon code, afin de faciliter les transfers de donnée
+entre processeurs... Dans mon vecteur 1 dimension se trouve toutes les données de la grille 2D utilisée
+pour résoudre l'équation de chaleur
+
+** main.cpp

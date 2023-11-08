@@ -123,6 +123,9 @@ int main(int argc, char * argv[]) {
 		for (int i = 0; i < size*nb_columns - size; i++) {
 			newgridline[i] = compute_element(i + index, recvbuf, size);
 		}
+		for (int i = 0; i < size; i++) {
+			newgridline[(size - 1)*nb_columns] = recvbuf[(size - 1) * nb_columns];
+		}
 	}
 	else {
 		for (int i = 0; i < size*nb_columns; i++) {

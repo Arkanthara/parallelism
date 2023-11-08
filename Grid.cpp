@@ -86,7 +86,7 @@ double compute_element(int n, vector<double> grid, int size) {
 
 	// I verify that we must compute the given value
  	if (i == size - 1 || j == size - 1 || i == 0 || j == 0) {
- 		return 1.;
+ 		return grid[n];
  	}
 
 	// I applie the given function

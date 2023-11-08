@@ -1,0 +1,84 @@
+% Created 2023-11-08 Wed 12:08
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Michel Donnet}
+\date{\today}
+\title{TP2 MPI}
+\hypersetup{
+ pdfauthor={Michel Donnet},
+ pdftitle={TP2 MPI},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.2 (Org mode 9.5.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\pagebreak
+
+\section{Explication du code}
+\label{sec:org7e609d3}
+
+Mon code est composé d'un fichier main.cpp, d'un fichier Grid.cpp avec son header Grid.h,
+et d'un fichier writer.cpp avec son header writer.h. Un makefile est présent pour compiler le tout.
+
+J'ai décidé de créer une grille à 1 dimension pour mon code, afin de faciliter les transfers de donnée
+entre processeurs\ldots{} Dans mon vecteur 1 dimension se trouve toutes les données de la grille 2D utilisée
+pour résoudre l'équation de chaleuri.
+
+La grille sur laquelle on va appliquer l'équation de chaleur est carrée, et le code ne fonctionne pas
+si le nombre de processeurs utilisés ne divise pas le nombre de colonnes de la grille.
+
+\subsection{Grid.cpp \& Grid.h}
+\label{sec:org7c7fe1f}
+On a défini dans Grid.cpp les fonctions dont la signature apparait dans Grid.h, et qui sont utilisées
+pour calculer l'équation de chaleur\ldots{} On a:
+\begin{verbatim}
+#ifndef __GRID_H__
+#define __GRID_H__
+
+#include <vector>
+
+using namespace std;
+using std::vector;
+
+// Allow us to create a grid
+vector<double> create_grid(int size);
+
+// Print our 1D vector as if it was a 2D vector with shape size * size
+void print_grid(vector<double> grid, int size);
+
+// Applies heat equation on the n eme element of our grid...
+// We indicate to fhe function that the size of our imaginary 2D grid is size, so we can
+// access to elements in our grid like if the grid was a 2D grid
+double compute_element(int n, vector<double> grid, int size);
+
+// Return the first column of a vector given, which represent part of grid with shape size*size
+vector<double> first_column(vector<double> grid, int size);
+// Return the last column of a vector given, which represent part of grid with shape size*size
+vector<double> last_column(vector<double> grid, int size);
+#endif
+\end{verbatim}
+Comme j'ai mis une documentation au dessus de chaque fonction pour indiquer ce que celle-ci fait, je
+vais vous épargner une répétition inappropriée\ldots{}
+
+J'ai également défini dans Grid.cpp une fonction permettant de convertir l'index d'un tableau 1D en
+tableau 2D pour une taille de tableau 2D donnée (sachant que le tableau 2D est carré).
+
+Ainsi, j'ai modifié la fonction \(compute\_element\) pour que celle ci puisse fonctionner pour calculer
+l'équation de chaleur sur un vecteur 1 dimension, donc j'ai dû prendre décomposer l'index n en l'index
+i et l'index j pour accéder à mon vecteur comme s'il était avec 2 dimensions.
+\end{document}
