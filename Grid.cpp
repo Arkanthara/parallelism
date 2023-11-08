@@ -81,13 +81,16 @@ double compute_element(int n, vector<double> grid, int size) {
 
 	// I convert n index to 2D index
  	auto tmp = get_index(n, size);
- 	int i = tmp[0];
- 	int j = tmp[1];
+ 	int i = n % size;
+ 	int j = n / size;
 
 	// I verify that we must compute the given value
- 	if (i == size - 1 || j == size - 1 || i == 0 || j == 0) {
- 		return grid[n];
- 	}
+ 	// if (i == size - 1 || j == size - 1 || i == 0 || j == 0) {
+ 	//	return grid[n];
+ 	// }
+	if (i == 0 || i == size - 1 || j == 0 || j == size - 1) {
+		return grid[n];
+	}
 
 	// I applie the given function
 	auto hx = 1./size;

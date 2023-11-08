@@ -117,19 +117,32 @@ int main(int argc, char * argv[]) {
 		recvbuf.insert(recvbuf.end(), tmp_2.begin(), tmp_2.end());
 	}
 
+	for (int i = 0; i < size*nb_columns; i++) {
+		cout << recvbuf[i] << " ";
+	}
+	cout << endl << endl;
+
 	// Here, we compute the result, with a shift if needed
 	// If we are in the last processor, we don't have to compute the last column, so we skip it...
 	if (rank == world_size - 1) {
 		for (int i = 0; i < size*nb_columns - size; i++) {
-			newgridline[i] = compute_element(i + index, recvbuf, size);
+			newgridline[i] = compute_element(i + size, recvbuf, size);
 		}
 		for (int i = 0; i < size; i++) {
-			newgridline[(size - 1)*nb_columns] = recvbuf[(size - 1) * nb_columns];
+			newgridline[(size - 1)*nb_columns + i] = recvbuf[(size - 1) * nb_columns + i];
 		}
 	}
+	else if (rank == 0) {
+		for (int i = size; i < size*nb_columns; i++) {
+			newgridline[i] = compute_element(i, recvbuf, size);
+		}
+		for (int i = 0; i < size; i ++) {
+			newgridline[i] = recvbuf[i];
+		}
+	}	
 	else {
 		for (int i = 0; i < size*nb_columns; i++) {
-			newgridline[i] = compute_element(i + index, recvbuf, size);
+			newgridline[i] = compute_element(i + size, recvbuf, size);
 		}
 	}
 
