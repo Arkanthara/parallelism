@@ -43,30 +43,41 @@ Ensuite, on prend notre grille 2D, on vérifie que son nombre de colonnes est di
 if (size % world_size != 0) return -1;
 ```
 
-Puis on crée une grille 2D, et on la convertit en grille 1D grâce aux fonctions définies dans grid.cpp.
+Puis on crée une grille 2D, et on la converti en grille 1D grâce aux fonctions définies dans grid.cpp.
 ```cpp
 vector<vector<double>> grid = create_grid(size);
 vector<double> grid_line = convert_to_1D(grid, size);
 ```
-
+Voici notre grille créée. Ici, pour mes représentations, je vais estimer que les processeurs vont travailler avec notre grille découpée en lignes, car comme notre grille est carrée, travailler avec des lignes est exactement la même chose que travailler avec des colonnes.
 \begin{table}[h!]
 \centering
-\begin{tabular}{ | l | l | l | l | }
+\begin{tabular}{ |lllllll| }
     \hline
-    \rowcolor{green}
-    & PE  & 0 & \\
-    \hline
-    \rowcolor{green}
-    & PE & 0 & \\
-    \hline
-    \rowcolor{green}
-    & PE & 0 & \\
-    \hline
-    \rowcolor{green}
-    & PE & 0 & \\
-    \hline
+    &&&0&&& \\
+    \hline 
+    &&&1&&& \\
+    \hline 
+    &&&2&&& \\
+    \hline 
+    &&&3&&& \\
+    \hline 
+    &&&4&&& \\
+    \hline 
+    &&&5&&& \\
+    \hline 
 \end{tabular}
 \end{table}
+
+Ce qui nous donne la grille précédente en ligne:
+\begin{table}[h!]
+\centering
+\begin{tabular}{ |l|l|l|l|l|l|}
+    \hline
+    0&1&2&3&4&5\\
+    \hline 
+\end{tabular}
+\end{table}
+
 
 
 
@@ -85,7 +96,7 @@ MPI_Scatter(
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{ | l | l | l | l | }
+\begin{tabular}{ | l l l l | }
     \hline
     \rowcolor{green}
     & PE  & 0 & \\
