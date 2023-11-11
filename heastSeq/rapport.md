@@ -49,24 +49,7 @@ vector<vector<double>> grid = create_grid(size);
 vector<double> grid_line = convert_to_1D(grid, size);
 ```
 Voici notre grille créée. Ici, pour mes représentations, je vais estimer que les processeurs vont travailler avec notre grille découpée en lignes, car comme notre grille est carrée, travailler avec des lignes est exactement la même chose que travailler avec des colonnes.
-\begin{table}[h!]
-\centering
-\begin{tabular}{ |lllllll| }
-    \hline
-    &&&0&&& \\
-    \hline 
-    &&&1&&& \\
-    \hline 
-    &&&2&&& \\
-    \hline 
-    &&&3&&& \\
-    \hline 
-    &&&4&&& \\
-    \hline 
-    &&&5&&& \\
-    \hline 
-\end{tabular}
-\end{table}
+
 
 Ce qui nous donne la grille précédente en ligne:
 ```plantuml
@@ -321,4 +304,24 @@ element2 --> grid1: Receive
 }
 @enduml
 ```
+Ensuite, on attend que les échanges soient finis par ces lignes de code:
 
+```cpp
+if (rank > 0) {
+	MPI_Wait(&top_request, MPI_STATUS_IGNORE);
+}
+if (rank < world_size - 1) {
+	MPI_Wait(&bottom_request, MPI_STATUS_IGNORE);
+}
+```
+Enfin, on calcule notre équation de chaleur, qu'on met dans un vecteur ligne, afin de préparer la réunion des données. Pour calculer l'équation de chaleur, j'ai repris la formule donnée. J'ai simplement fait en sorte que chacun des processeurs calcule uniquement les lignes qui lui ont été attribué: 
+```cpp
+for (int i=rank*nb_columns;i<rank*nb_columns + nb_columns;i++)
+```
+Pour ne pas calculer les bords, j'ai ajouté une condition demandant de ne pas calculer l'équation si on se trouve sur le bord de la grille.
+
+```cpp
+if (i == 0 || j == 0 || j == size - 1 || i == size - 1) recvbuf[n] = grid[i][j];
+```
+
+Enfin, maintenant que chacun des processeur
