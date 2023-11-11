@@ -1,0 +1,21 @@
+@startuml
+title as grid
+    0
+    ----
+    1
+    ----
+    2
+    ----
+    3
+    ----
+    4
+    ----
+    5
+end title
+
+title as gridline
+    |  0  |  1  |  2  |  3  |  4  |  5  |
+end title
+
+grid --> gridline
+@enduml

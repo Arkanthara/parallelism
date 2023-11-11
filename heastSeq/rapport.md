@@ -69,17 +69,32 @@ Voici notre grille créée. Ici, pour mes représentations, je vais estimer que 
 \end{table}
 
 Ce qui nous donne la grille précédente en ligne:
-\begin{table}[h!]
-\centering
-\begin{tabular}{ |l|l|l|l|l|l|}
-    \hline
-    0&1&2&3&4&5\\
-    \hline 
-\end{tabular}
-\end{table}
+```plantuml
+@startuml
 
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |
+    |  row 1  |
+    |  row 2  |
+    |  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
 
+note as gridline
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+end note
 
+grid --> gridline
+@enduml
+```
 
 Enfin, on va découper notre grille linéaire en N grilles linéaires plus petites en utilisant la primitive Scatter de MPI qui prend en paramètre un vecteur 1 dimension et qui va le diviser en N vecteurs de dimension donnée dans MPI, avec N le nombre de processeurs utilisés. Cela nous donne:
 ```cpp
@@ -93,28 +108,217 @@ MPI_Scatter(
     0,
     MPI_COMM_WORLD);
 ```
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+end note
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{ | l l l l | }
-    \hline
-    \rowcolor{green}
-    & PE  & 0 & \\
-    \hline
-    \rowcolor{cyan}
-    & PE & 1 & \\
-    \hline
-    \rowcolor{magenta}
-    & PE & 2 & \\
-    \hline
-    \rowcolor{yellow}
-    & PE & 3 & \\
-    \hline
-\end{tabular}
-\end{table}
+note as grid0
+    | row 0 | row 1 |
+    processor 0
+end note
+note as grid1
+    | row 2 | row 3 |
+    processor 1
+end note
+note as grid2
+    | row 4 | row 5 |
+    processor 2
+end note
+grid --> grid0
+grid --> grid1
+grid --> grid2
 
+@enduml
+```
 Ensuite, on va prendre la donnée reçue et on va la réinsérer dans la grille 2D car la grille a été créée et c'est possible de la réutiliser pour ensuite calculer plus facilement l'équation de chaleur pour chaque élément donné grâce à la formule de l'équation de chaleur.
 
 ```cpp
 grid = put_into_2D(grid, recvbuf, nb_columns, rank, size);
 ```
+```plantuml
+@startuml
+skinparam ClassFontSize 11
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as element
+    <#yellow>|  row 2  | row 3 |
+end note
+note as grid
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+element --> grid : "put_into_2D"
+
+
+@enduml
+```
+
+Si on n'est pas le premier processeur, on envoie notre première ligne au processeur de rang inférieur, et on reçoit de ce processeur sa dernière ligne.
+```cpp
+if (rank > 0) {
+		MPI_Isend(
+            grid[rank * nb_columns].data(),
+            size,
+            MPI_DOUBLE,
+            rank - 1,
+            0,
+            MPI_COMM_WORLD,
+            &top_request
+        );
+		MPI_Irecv(
+            grid[rank * nb_columns - 1].data(),
+            size,
+            MPI_DOUBLE,
+            rank - 1,
+            0,
+            MPI_COMM_WORLD,
+            &top_request
+        );
+}
+```
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+card "Processor of rank > 0" {
+note as element1
+    <#green>|  row 2  |
+end note
+
+note as element2
+    <#pink>|  row 1  |
+end note
+
+note as grid1l
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+note as grid12
+    |  row 0  |
+    <#yellow>|  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+
+note as grid1
+    |  row 0  |
+    <#pink>|  row 1  |
+    <#green>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+grid1l -> grid1
+grid1 -> grid12
+grid1 --> element1: Send
+element2 --> grid1: Receive
+}
+@enduml
+```
+
+Si on n'est pas le dernier processeur, on envoie notre dernière ligne au processeur de rang supérieur, et on reçoit de ce processeur sa première ligne.
+```cpp
+if (rank < world_size - 1) {
+		MPI_Isend(
+            grid[(rank + 1) * nb_columns - 1].data(),
+            size,
+            MPI_DOUBLE,
+            rank + 1,
+            0,
+            MPI_COMM_WORLD,
+            &bottom_request
+        );
+		MPI_Irecv(
+            grid[(rank + 1) * nb_columns].data(),
+            size,
+            MPI_DOUBLE,
+            rank + 1,
+            0,
+            MPI_COMM_WORLD,
+            &bottom_request
+        );
+}
+```
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+card "Processor of rank < world_size" {
+note as element1
+    <#green>|  row 3  |
+end note
+
+note as element2
+    <#pink>|  row 4  |
+end note
+
+note as grid1l
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+note as grid12
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    <#yellow>|  row 4  |
+    |  row 5  |
+end note
+
+
+note as grid1
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#green>|  row 3  |
+    <#pink>|  row 4  |
+    |  row 5  |
+end note
+grid1l -> grid1
+grid1 -> grid12
+grid1 --> element1: Send
+element2 --> grid1: Receive
+}
+@enduml
+```
+

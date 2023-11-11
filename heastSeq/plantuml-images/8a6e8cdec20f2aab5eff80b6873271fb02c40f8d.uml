@@ -1,0 +1,49 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+card "Processor of rank > 0" {
+note as element1
+    <#green>|  row 2  |
+end note
+
+note as element2
+    <#pink>|  row 1  |
+end note
+
+note as grid1l
+    |  row 0  |
+    |  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+note as grid12
+    |  row 0  |
+    <#yellow>|  row 1  |
+    <#yellow>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+
+note as grid1
+    |  row 0  |
+    <#pink>|  row 1  |
+    <#green>|  row 2  |
+    <#yellow>|  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+grid1l -> grid1
+grid1 -> grid12
+grid1 --> element1: Send
+element2 --> grid1: Receive
+}
+@enduml

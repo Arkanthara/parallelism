@@ -1,0 +1,38 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  Line 0  |  Line 1  |  Line 2  |  Line 3  |  Line 4  |  Line 5  |
+end note
+
+note as grid0
+    | Line 0 |
+end note
+note as grid1
+    | Line 1 |
+end note
+note as grid2
+    | Line 2 |
+end note
+note as grid3
+    | Line 3 |
+end note
+note as grid4
+    | Line 4 |
+end note
+note as grid5
+    | Line 5 |
+end note
+grid --> grid0
+grid --> grid1
+grid --> grid2
+grid --> grid3
+grid --> grid4
+grid --> grid5
+
+@enduml
