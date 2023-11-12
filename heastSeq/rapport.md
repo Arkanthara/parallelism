@@ -6,6 +6,7 @@ classoption: table
 header-includes:
 ---
 
+\newpage
 # Explication du code
 
 Mon code est composé d'un Makefile, d'un main.cpp contenant la fonction principale, d'un fichier grid.cpp et son header grid.h contenant les signatures des fonctions présentes dans
@@ -75,7 +76,7 @@ note as gridline
     |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
 end note
 
-grid --> gridline
+grid -> gridline
 @enduml
 ```
 
@@ -102,6 +103,7 @@ note {
 </style>
 note as grid
     |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+    processor 0
 end note
 
 note as grid0
@@ -324,4 +326,92 @@ Pour ne pas calculer les bords, j'ai ajouté une condition demandant de ne pas c
 if (i == 0 || j == 0 || j == size - 1 || i == size - 1) recvbuf[n] = grid[i][j];
 ```
 
-Enfin, maintenant que chacun des processeur
+Enfin, maintenant que chacun des processeur a calculé sa part de l'équation de chaleur et stocké le tout dans une grille 1 dimension, on réuni tous les calculs effectués dans un vecteur ligne grâce à un Gather. Cela s'exprime par cette ligne de code:
+```cpp
+MPI_Gather(
+    recvbuf.data(),
+    nb_columns * size,
+    MPI_DOUBLE,
+    grid_line.data(),
+    nb_columns * size,
+    MPI_DOUBLE,
+    0,
+    MPI_COMM_WORLD
+);
+```
+Ce qui, graphiquement, nous donne:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+    processor 0
+end note
+
+note as grid0
+    | row 0 | row 1 |
+    processor 0
+end note
+note as grid1
+    | row 2 | row 3 |
+    processor 1
+end note
+note as grid2
+    | row 4 | row 5 |
+    processor 2
+end note
+grid0 --> grid
+grid1 --> grid
+grid2 --> grid
+
+@enduml
+```
+Et maintenant que nous avons récupéré toutes les données sous forme d'un vecteur ligne (toutes les données sont récupérées dans le processeur 0), on peut transformer ce vecteur ligne en une grille 2D grâce à la fonction $convert\_to\_2D$ définie dans le fichier grid.cpp si on est le processeur 0, et ensuite créer une image bmp à partir des données contenues dans la grille.
+```cpp
+grid = convert_to_2D(grid_line, grid, grid.size());
+write_to_bmp(
+    size, // Size of the grid
+    grid, // The grid to use
+    time, // The iteration (just used to name the file of the output image)
+    *min_element(grid_line.begin(), grid_line.end()), // Get min of the grid
+    *max_element(grid_line.begin(), grid_line.end())  // Get max of the grid
+);
+```
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |
+    |  row 1  |
+    |  row 2  |
+    |  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+note as im
+    <img:/home/darcy/Documents/parallelism/heastSeq/image.png>
+end note
+
+note as gridline
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+end note
+
+gridline -> grid
+grid -> im
+@enduml
+```
+
