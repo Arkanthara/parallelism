@@ -3,7 +3,7 @@
 #SBATCH --output ./out/Michel_TP2-out.o%j    # Outputs will be written here
 #SBATCH --error ./err/Michel_TP2-err.e%j     # Errors will be written here
 #SBATCH --partition debug-cpu          # Partition to use
-#SBATCH --time 30:00                   # Maximum time execution
+#SBATCH --time 15:00                   # Maximum time execution
 
 # Load modules for compiling and run program
 module load foss
@@ -35,10 +35,6 @@ if [ -n "$1" ]; then
 	srun --mpi=pmi2 ./tp3 256 100
 	srun --mpi=pmi2 ./tp3 256 1000
 	srun --mpi=pmi2 ./tp3 256 10000
-	srun --mpi=pmi2 ./tp3 256 100000
-	echo "$1 10^5 iterations grid size 64, 128, 256"
-	srun --mpi=pmi2 ./tp3 64 100000
-	srun --mpi=pmi2 ./tp3 128 100000
 	srun --mpi=pmi2 ./tp3 256 100000
 else
 	echo "Usage: sbatch -n nb run.sh nb"
