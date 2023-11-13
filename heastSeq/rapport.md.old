@@ -37,20 +37,8 @@ MPI_Comm_rang(MPI_COMM_WORLD, &rank);
 int world_size = 0;
 MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 ```
-Puis, si on est le processeur 0, on prend le temps à l'état initial grâce à l'appel à la fonction $MPI\_Wtime()$ qui nous donne le temps en seconde lors de son appel, et à la fin de notre code, on prend le temps et on compare avec le temps initial pour obtenir le temps d'exécution de notre code:
-```cpp
-// Begining of the code
-double start = 0;
-if (rank == 0) {
-    start = MPI_Wtime();
-}
-...
-// End of the code
-if (rank == 0) {
-    double end = MPI_Wtime();
-    cout << end - start << endl;
-}
-```
+
+
 Ensuite, on prend notre grille 2D, on vérifie que son nombre de colonnes est divisible par le nombre de processeurs utilisés dans notre problème par:
 ```cpp
 if (size % world_size != 0) return -1;
@@ -163,7 +151,7 @@ note as grid
     |  row 5  |
 end note
 
-element -> grid : "put_into_2D"
+element --> grid : "put_into_2D"
 
 
 @enduml
@@ -426,40 +414,13 @@ gridline -> grid
 grid -> im
 @enduml
 ```
-## Makefile
-Voici à quoi ressemble mon Makefile:
-```Makefile
-CC = mpic++
-CFLAGS = -g -Wall -c
-OBJS = grid.o writer.o
-.PHONY = clean cleanbmp
+### Todo: Timer
+## Makefile ?
+## Run.sh ?
 
-tp3: main.cpp $(OBJS)
-	$(CC) $(OBJS) main.cpp -o tp3
-
-grid.o: grid.cpp
-	$(CC) $(CFLAGS) grid.cpp -o grid.o
-
-writer.o: writer.cpp
-	$(CC) $(CFLAGS) writer.cpp -o writer.o
-
-clean:
-	rm $(OBJS) tp3
-
-cleanbmp:
-	rm T_*
-
-cleanoutput:
-	rm ./err/* ./out/*
-```
-J'ai ajouté une méthode cleanbmp pour supprimer toutes les images que j'ai généré par mon programme, ainsi qu'une méthode cleanoutput pour supprimer tous les fichiers que j'ai créé dans baobab.
-
-## Run.sh
-
-\newpage
 # Tests et discussion sur les résultats obtenus
 
-Tout d'abord, voici les résultats obtenus pour $10^0, 10^1, 10^2, 10^3, 10^4$ et $10^5$ itérations pour une grille de taille $128\times 128$. J'ai ici donné le temps d'exécution sur baobab et sur ma machine (donc local time), avec 4 processeurs car ma machine ne possède que 4 coeurs:
+Tout d'abord, voici les résultats obtenus pour $10^0, 10^1, 10^2, 10^3, 10^4$ et $10^5$ itérations pour une grille de taille $128\times 128$ avec 4 processeurs avec TODOOOOOO:
 
 ```plantuml
 @startuml
@@ -474,22 +435,19 @@ note {
 note as im0
     <img:/home/darcy/Documents/parallelism/heastSeq/img_0001.png>
     iterations: 1
-    local time: 0.00273787 s
-    baobab time: 0.0995883 s
+    time: 0.00273787 s
 end note
 
 note as im1
     <img:/home/darcy/Documents/parallelism/heastSeq/img_0010.png>
     iterations: 10
-    local time: 0.00925136 s
-    baobab time: 0.102747 s
+    time: 0.00925136 s
 end note
 
 note as im2
     <img:/home/darcy/Documents/parallelism/heastSeq/img_0100.png>
     iterations: 100
-    local time: 0.0427147 s
-    baobab time: 0.138363 s
+    time: 0.0427147 s
 end note
 
 im0 -> im1
@@ -508,30 +466,23 @@ note {
 note as im3
     <img:/home/darcy/Documents/parallelism/heastSeq/img_1000.png>
     iterations: 1000
-    local time: 0.378882 s
-    baobab time: 0.492121 s
+    time: 0.378882 s
 end note
 
 note as im4
     <img:/home/darcy/Documents/parallelism/heastSeq/img_10000.png>
     iterations: 10000
-    local time: 9.84631 s
-    baobab time: 4.01674 s
+    time: 9.84631 s
 end note
 
 note as im5
     <img:/home/darcy/Documents/parallelism/heastSeq/img_100000.png>
     iterations: 100000
-    local time: 105.119 s
-    baobab time: 39.3161 s
+    time: 105.119 s
 end note
 
 im3 -> im4
 im4 -> im5
 @enduml
 ```
-
-En observant les résultats, nous pouvons observer des choses intéressantes:
-- le temps d'exécution sur ma machine est plus rapide que le temps d'exécution sur baobab pour un nombre d'itérations inférieur ou égal à 1000. Si on fait un graphique, cela nous donne pour des grilles de taille 64, 128 et 256:
-
 

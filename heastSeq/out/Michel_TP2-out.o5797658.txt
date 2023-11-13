@@ -1,0 +1,25 @@
+cpu001
+mpic++ -g -Wall -c grid.cpp -o grid.o
+mpic++ -g -Wall -c writer.cpp -o writer.o
+mpic++ grid.o writer.o main.cpp -o tp3
+2 64x64 10^0 to 10^5 iterations
+0.0394493
+0.0407327
+0.0558461
+0.215324
+1.81312
+17.8895
+2 128x128 10^0 to 10^5 iterations
+0.0398728
+0.04833
+0.104653
+0.697467
+6.68459
+66.5839
+2 256x256 10^0 to 10^5 iterations
+0.0516994
+0.0751354
+0.311651
+2.55946
+26.0479
+251.321
