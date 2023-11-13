@@ -83,14 +83,14 @@ grid -> gridline
 Enfin, on va découper notre grille linéaire en N grilles linéaires plus petites en utilisant la primitive Scatter de MPI qui prend en paramètre un vecteur 1 dimension et qui va le diviser en N vecteurs de dimension donnée dans MPI, avec N le nombre de processeurs utilisés. Cela nous donne:
 ```cpp
 MPI_Scatter(
-    grid_line.data(),
-    nb_columns * size,
-    MPI_DOUBLE,
-    recvbuf.data(),
-    nb_columns * size,
-    MPI_DOUBLE,
-    0,
-    MPI_COMM_WORLD);
+    grid_line.data(),       // Data to split
+    nb_columns * size,      // Size of a split
+    MPI_DOUBLE,             // Data type
+    recvbuf.data(),         // Destination of a split
+    nb_columns * size,      // Size of destination
+    MPI_DOUBLE,             // Data type of destination
+    0,                      // Rank of processor which split datas
+    MPI_COMM_WORLD);        // Communicator between processors
 ```
 ```plantuml
 @startuml
@@ -161,22 +161,22 @@ Si on n'est pas le premier processeur, on envoie notre première ligne au proces
 ```cpp
 if (rank > 0) {
 		MPI_Isend(
-            grid[rank * nb_columns].data(),
-            size,
-            MPI_DOUBLE,
-            rank - 1,
-            0,
-            MPI_COMM_WORLD,
-            &top_request
+            grid[rank * nb_columns].data(),     // Data to send
+            size,                               // Size of data
+            MPI_DOUBLE,                         // Type of data
+            rank - 1,                           // Rank of processor which receive data
+            0,                                  // Tag
+            MPI_COMM_WORLD,                     // Communicator
+            &top_request                        // Communication request
         );
 		MPI_Irecv(
-            grid[rank * nb_columns - 1].data(),
-            size,
-            MPI_DOUBLE,
-            rank - 1,
-            0,
-            MPI_COMM_WORLD,
-            &top_request
+            grid[rank * nb_columns - 1].data(), // buffer to receive data
+            size,                               // Size of buffer
+            MPI_DOUBLE,                         // Type of data
+            rank - 1,                           // Rank of processor which send data
+            0,                                  // Tag
+            MPI_COMM_WORLD,                     // Communicator
+            &top_request                        // Communication request
         );
 }
 ```
@@ -236,22 +236,22 @@ Si on n'est pas le dernier processeur, on envoie notre dernière ligne au proces
 ```cpp
 if (rank < world_size - 1) {
 		MPI_Isend(
-            grid[(rank + 1) * nb_columns - 1].data(),
-            size,
-            MPI_DOUBLE,
-            rank + 1,
-            0,
-            MPI_COMM_WORLD,
-            &bottom_request
-        );
-		MPI_Irecv(
-            grid[(rank + 1) * nb_columns].data(),
-            size,
-            MPI_DOUBLE,
-            rank + 1,
-            0,
-            MPI_COMM_WORLD,
-            &bottom_request
+            grid[(rank + 1) * nb_columns - 1].data(),   // Data to send
+            size,                                       // Size of data
+            MPI_DOUBLE,                                 // Type of data
+            rank + 1,                                   // Rank of processor which receive data
+            0,                                          // Tag
+            MPI_COMM_WORLD,                             // Communicator
+            &bottom_request                             // Communication request
+        );                                                                       
+		MPI_Irecv(                                                               
+            grid[(rank + 1) * nb_columns].data(),       // buffer to receive data
+            size,                                       // Size of buffer
+            MPI_DOUBLE,                                 // Type of data
+            rank + 1,                                   // Rank of processor which send data
+            0,                                          // Tag
+            MPI_COMM_WORLD,                             // Communicator
+            &bottom_request                             // Communication request
         );
 }
 ```
@@ -329,14 +329,14 @@ if (i == 0 || j == 0 || j == size - 1 || i == size - 1) recvbuf[n] = grid[i][j];
 Enfin, maintenant que chacun des processeur a calculé sa part de l'équation de chaleur et stocké le tout dans une grille 1 dimension, on réuni tous les calculs effectués dans un vecteur ligne grâce à un Gather. Cela s'exprime par cette ligne de code:
 ```cpp
 MPI_Gather(
-    recvbuf.data(),
-    nb_columns * size,
-    MPI_DOUBLE,
-    grid_line.data(),
-    nb_columns * size,
-    MPI_DOUBLE,
-    0,
-    MPI_COMM_WORLD
+    recvbuf.data(),         // Buffer of data to merge
+    nb_columns * size,      // Size of buffer
+    MPI_DOUBLE,             // Type of data
+    grid_line.data(),       // Destination of all datas
+    nb_columns * size,      // Size of a split
+    MPI_DOUBLE,             // Type of data
+    0,                      // Root processor which collect data
+    MPI_COMM_WORLD          // Communicator
 );
 ```
 Ce qui, graphiquement, nous donne:
@@ -412,6 +412,77 @@ end note
 
 gridline -> grid
 grid -> im
+@enduml
+```
+### Todo: Timer
+## Makefile ?
+## Run.sh ?
+
+# Tests et discussion sur les résultats obtenus
+
+Tout d'abord, voici les résultats obtenus pour $10^0, 10^1, 10^2, 10^3, 10^4$ et $10^5$ itérations pour une grille de taille $128\times 128$ avec 4 processeurs avec TODOOOOOO:
+
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as im0
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_0001.png>
+    iterations: 1
+    time: 0.00273787 s
+end note
+
+note as im1
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_0010.png>
+    iterations: 10
+    time: 0.00925136 s
+end note
+
+note as im2
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_0100.png>
+    iterations: 100
+    time: 0.0427147 s
+end note
+
+im0 -> im1
+im1 -> im2
+@enduml
+```
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im3
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_1000.png>
+    iterations: 1000
+    time: 0.378882 s
+end note
+
+note as im4
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_10000.png>
+    iterations: 10000
+    time: 9.84631 s
+end note
+
+note as im5
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_100000.png>
+    iterations: 100000
+    time: 105.119 s
+end note
+
+im3 -> im4
+im4 -> im5
 @enduml
 ```
 

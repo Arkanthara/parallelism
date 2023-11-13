@@ -41,6 +41,11 @@ int main(int argc, char* argv[])
 	int world_size = 0;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
+	double start;
+
+	if (rank == 0) {
+		start = MPI_Wtime();
+	}
 	auto grid = create_grid(size);
 
 	auto grid_line = convert_to_1D(grid, size);
@@ -102,6 +107,8 @@ int main(int argc, char* argv[])
 	}
 
 	if (rank == 0) {
+		auto end = MPI_Wtime();
+		cout << end - start << endl;
 		grid = convert_to_2D(grid_line, grid, grid.size());
 		write_to_bmp(size,grid,time, *min_element(grid_line.begin(), grid_line.end()), *max_element(grid_line.begin(), grid_line.end()));
 	}
