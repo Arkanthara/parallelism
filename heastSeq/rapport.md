@@ -532,6 +532,67 @@ im4 -> im5
 ```
 
 En observant les résultats, nous pouvons observer des choses intéressantes:
-- le temps d'exécution sur ma machine est plus rapide que le temps d'exécution sur baobab pour un nombre d'itérations inférieur ou égal à 1000. Si on fait un graphique, cela nous donne pour des grilles de taille 64, 128 et 256:
+- le temps d'exécution sur ma machine est plus rapide que le temps d'exécution sur baobab pour un nombre d'itérations inférieur ou égal à 1000. Je pense que cela est dûe à la communication entre les processeurs: sur baobab,  les processeurs ne sont pas forcément sur le chip, tandis que dans mon ordinateur, les processeurs sont sur un même chip, donc la communication inter processeur est très rapide, contrairement à baobab. Par contre, baobab possède des processeurs plus puissant que les miens. En effet, mes processeurs doivent avoir une fréquence d'horloge de 2 GHz tandis que sur baobab, on doit plutôt être à 4 GHz car pour un gros calcul où les temps de communications deviennent négligeable, baobab est plus rapide.
+
+## Exécution sur baobab
+
+J'ai exécuté mon programme sur baobab en variant plusieurs paramètes (taille de la grille, itérations, nombre de processeurs...)
+J'ai ensuite récupéré les données du temps d'exécution afin d'afficher des graphes que j'ai fait avec python.
+Voici différents résultats que j'ai obtenu:
+\newpage
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im1
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/Size_64.png>
+end note
+note as im2
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/Size_128.png>
+end note
+
+im1 -[hidden]r-> im2
+@enduml
+```
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im1
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/Size_256.png>
+end note
+@enduml
+```
+On peut constater que nous avons de grandes différences sur les temps d'exécutions pour un nombre élevé d'itérations, mais que sinon, les temps d'exécutions sont très proches. Cela est dû au fait que pour un nombre faible d'itérations, le temps de communication entre processeurs n'est pas négligeable, ce qui égalise les exécutions où on n'a pas beaucoup de processeurs, qui doivent alors calculer plus, et où on a beaucoup de processeurs, qui passent un temps non négligeable à se transmettre les informations.
+
+C'est pour cela qu'on a décidé de prendre un nombre d'itérations élevé de $10^5$ pour avoir un temps de communication entre processeur négligeable comparé au temps de calcul.
+
+Voici le graphe que j'obtiens pour un nombre fixé d'itérations:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im1
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/grid.png>
+end note
+@enduml
+```
+
+On peut remarquer que pour des petites grilles, le temps de calcul ne varie plus à partir de 8 processeurs...
+
+
+
 
 
