@@ -18,7 +18,7 @@ make
 # Run program. If the parameter is not given to execute an exercise, we print an error which will be in ./err/Michel_TP2-err.e%j
 # Else, we execute program
 if [ -n "$1" ]; then
-	srun --mpi=pmi2 ./tp3 $1
+	srun --mpi=pmi2 ./tp3 $1 100000
 else
-	echo "Error ! Usage of the script: ./run.sh [number of the exercise]" 1>&2
+	echo "Error ! Usage of the script: ./run.sh [size of the grid]. Ex: ./run.sh 64" 1>&2
 fi

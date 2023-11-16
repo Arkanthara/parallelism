@@ -455,7 +455,50 @@ cleanoutput:
 J'ai ajouté une méthode cleanbmp pour supprimer toutes les images que j'ai généré par mon programme, ainsi qu'une méthode cleanoutput pour supprimer tous les fichiers que j'ai créé dans baobab.
 
 ## Run.sh
+Voici le contenu de mon script run.sh:
+```bash
+#!/bin/sh
+#SBATCH --job-name Michel_TP2          # Permit us to find easily our job
+#SBATCH --output ./out/Michel_TP2-out.o%j    # Outputs will be written here
+#SBATCH --error ./err/Michel_TP2-err.e%j     # Errors will be written here
+#SBATCH --partition debug-cpu          # Partition to use
+#SBATCH --time 15:00                   # Maximum time execution
 
+# Load modules for compiling and run program
+module load foss
+module load CUDA
+
+echo $SLURM_NODELIST
+
+# Compile program
+make
+# Run program. If the parameter is not given to execute an exercise, we print an error which will be in ./err/Michel_TP2-err.e%j
+if [ -n "$1" ]; then
+	echo "$1 64x64 10^0 to 10^5 iterations"
+	srun --mpi=pmi2 ./tp3 64 1
+	srun --mpi=pmi2 ./tp3 64 10
+	srun --mpi=pmi2 ./tp3 64 100
+	srun --mpi=pmi2 ./tp3 64 1000
+	srun --mpi=pmi2 ./tp3 64 10000
+	srun --mpi=pmi2 ./tp3 64 100000
+	echo "$1 128x128 10^0 to 10^5 iterations"
+	srun --mpi=pmi2 ./tp3 128 1
+	srun --mpi=pmi2 ./tp3 128 10
+	srun --mpi=pmi2 ./tp3 128 100
+	srun --mpi=pmi2 ./tp3 128 1000
+	srun --mpi=pmi2 ./tp3 128 10000
+	srun --mpi=pmi2 ./tp3 128 100000
+	echo "$1 256x256 10^0 to 10^5 iterations"
+	srun --mpi=pmi2 ./tp3 256 1
+	srun --mpi=pmi2 ./tp3 256 10
+	srun --mpi=pmi2 ./tp3 256 100
+	srun --mpi=pmi2 ./tp3 256 1000
+	srun --mpi=pmi2 ./tp3 256 10000
+	srun --mpi=pmi2 ./tp3 256 100000
+else
+	echo "Usage: sbatch -n nb run.sh nb"
+fi
+```
 \newpage
 # Tests et discussion sur les résultats obtenus
 
@@ -590,8 +633,13 @@ end note
 @enduml
 ```
 
-On peut remarquer que pour des petites grilles, le temps de calcul ne varie plus à partir de 8 processeurs...
+On peut remarquer que pour des petites grilles, le temps de calcul ne varie plus à partir de 4 processeurs pour une grille de 64 et à partir de 8 processeurs pour une grille 2 fois plus grande, c'est à dire une grille de 128... Je pense que c'est parce que après, les processeurs mettent un temps certain pour discuter entre eux, et le temps de communication entre les processeurs devient non négligeable comparé au temps de calcul des processeurs.
 
+Au fait, je pense qu'on pourrait faire un ratio pour savoir à partir de combien de processeurs notre problème ne va plus être exécuté avec des performances notables. Pour l'instant, on peut remarquer que $\frac{64}{4} = 16$ et que $\frac{128}{8} = 16$. Donc on pourrait supposer que tant que les processeurs ont plus que 16 colonnes à calculer, on peut gagner des performances en ajoutant des processeurs au problème, et si les processeurs ont moins de 16 colonnes à calculer, on n'aura pas de gain notable de performance car le temps de communication est plus grand entre les processeurs.
+
+J'aurais bien aimé exécuter mon code avec 32 processeurs pour voir si ma supposition se vérifie également pour une grille de 256 car on aurait $\frac{256}{16} = 16$, et on pourrait observer que, comme je le suppose, on n'aurait plus de gain de performances...
+
+Donc on peut conclure que multiplier le nombre de processeurs pour un problème donné va augmenter les performances, mais qu'à un moment donné, les performances ne vont plus trop augmenter car les processeurs vont passer trop de temps à communiquer entre eux plutôt qu'à calculer.
 
 
 
