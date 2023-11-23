@@ -5,12 +5,14 @@ using namespace std;
 
 int main(int argc, char * argv[]) {
 
-	// Test if parameters are correct
+	// Test if the user give the right number of parameters
 	if (argc < 2 || argc > 3) {
-		cerr << "Error ! give the number of circumscribed rectangle !" << endl;
-		cout << "Usage: " << argv[0] << " number (must be non negative...)" << endl;
+		cerr << "Error ! give the number of circumscribed rectangles !" << endl;
+		cout << "Usage: " << argv[0] << " number of circumscribed rectanges [optionnal: number of threads]\nWarning ! All the numbers must be non negative !" << endl;
 		return -1;
 	}
+
+	// Get the number of circumscribed rectangles
 	int n = atoi(argv[1]);
 	if (n <= 0) {
 		cerr << "Error ! bad number value !" <<endl;
@@ -18,27 +20,25 @@ int main(int argc, char * argv[]) {
 		return -1;
 	}
 
+	// Set the number of threads if the argument is given
 	int nthread;
 	if (argc == 3) {
 		nthread = atoi(argv[2]);
 		if (nthread <= 0) {
 			cerr << "Error ! bad number value !" <<endl;
-			cout << "Usage: " << argv[0] << " number (must be non negative...)" << endl;
+			cout << "Usage: " << argv[0] << " number of circumscribed rectanges [optionnal: number of threads]\nWarning ! All the numbers must be non negative !" << endl;
 			return -1;
 		}
 		omp_set_num_threads(nthread);
 
 	}
 
-	#pragma omp parallel
-	{
-		nthread = omp_get_num_threads();
-	}
-	cout << "Executing program with " << nthread << " threads" << endl;
-
+	// Get the time
 	double start = omp_get_wtime();
 
 	// Define here our function f(x) = 4/(1 + x^2)
+	// We have the result of the function 1/(1 + x^2) which give Pi/4
+	// So I made 4/(1 + x^2) to have Pi
 	auto f = [](double x) -> double {
 		return 4./(1. + x * x);
 	};
@@ -54,12 +54,23 @@ int main(int argc, char * argv[]) {
 	for (int i = 1; i < n + 1; i++) {
 		pi += delta * f(i*delta);
 	}
+	/* TO FIX
+	// Get the number of threads
+	// We must be in parallel region to get the number of threads
+	// or we just get one thread because it count the number of thread in execution
+	nthread = omp_get_num_threads();
+	*/
 
-	// Print output
+	// Print number of thread used
+	cout << "Number of threads used: " << nthread << endl;
+
+	// Print result of approximation
 	cout << "Pi approximation: " << pi << endl;
 	
+	// Get the time
 	double end = omp_get_wtime();
 
+	// Print execution time
 	cout << "Execution time: " << end - start << endl;
 
 	return 0;
