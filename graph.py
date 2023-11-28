@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -7,7 +8,7 @@ nthreads
 for i in range(14):
     nthreads.append(power**i)
 
-execution_time_1 = [
+execution_time = np.array([
         1.76764,
         0.898974,
         0.451589,
@@ -22,7 +23,9 @@ execution_time_1 = [
         0.135562,
         0.210895,
         0.371931
-        ]
+        ])
+
+speed_up = execution_time[0] / execution_time
 
 print(nthreads)
 
@@ -31,6 +34,15 @@ plt.title("Execution time result with variyng thread counts")
 plt.plot(nthreads, execution_time)
 plt.xlabel("Number of threads")
 plt.ylabel("Execution time (s)")
+plt.xscale('log', base=2)
+plt.legend()
+plt.show()
+
+plt.figure()
+plt.title("Compute an empiric speed up")
+plt.plot(nthreads, speed_up)
+plt.xlabel("Number of threads")
+plt.ylabel("Speed up")
 plt.xscale('log', base=2)
 plt.legend()
 plt.show()

@@ -1,0 +1,13 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img
+    <img:/home/darcy/Documents/parallelism/speed_up.png>
+end note
+
+@enduml
