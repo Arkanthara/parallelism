@@ -16,7 +16,7 @@ int main(int argc, char * argv[]) {
 	int n = 100000000;
 
 	// Set the number of threads if the argument is given
-	int nthread = 8;
+	int nthread;
 	if (argc == 2) {
 		nthread = atoi(argv[1]);
 		if (nthread <= 0) {
