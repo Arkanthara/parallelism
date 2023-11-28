@@ -1,0 +1,14 @@
+@startuml
+<style>
+note {
+    background white
+    linecolor transparent
+}
+<\style>
+
+note as item
+    <img:/home/darcy/Documents/parallelism/graph_execution_time.png>
+end note
+
+
+@enduml

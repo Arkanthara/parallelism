@@ -7,20 +7,18 @@ date: \today
 \newpage
 # Explanation of the code
 
+For this TP, I use 100000000 circumscribed rectangles.
+
 My code is all done in the main.cpp.
 We can execute my code like this:
 ```bash
 ./build/tp4
 ```
-Or like this, with the number of circumscribed rectangles given
+Or like this, with the number of threads given to execute parallel section of the code
 ```bash
-./build/tp4 1000000
+./build/tp4 16
 ```
-Or like this, with the number of circumscribed rectangles and the number of processor given
-```bash
-./build/tp4 1000000 16
-```
-The default number of threads used is 8 and the default number of circumscribed rectangles is $10^8$.
+The default number of threads used is given by the machine (in my machine, this number is 8 whereas on baobab, the default number of thread is 32).
 
 
 At the begining, I look after parameters, to set up the number of thread (stored in the variable 'n') and the number of circumscribed rectangles (stored in the variable 'nthread').
@@ -138,6 +136,24 @@ This primitive take the datas to compute of the for loop and divide this work to
 
 # Presentation of the execution time results with varying thread counts.
 
+I run the program on baobab with a fixed 100000000 number of circumscribed rectangles, and then I vary the number of thread to compute parallel section. I obtain the results below:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+
+note as item
+    <img:/home/darcy/Documents/parallelism/graph_execution_time.png>
+end note
+
+
+@enduml
+```
 
 
 # Graphs depicting the scaling of execution times.
