@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -g -Wall -fopenmp
 .PHONY = clean
 
-BUILD_DIR := $(shell if [ ! -d build ]; then mkdir build; echo build; else echo build; fi;)
+BUILD_DIR := $(shell mkdir build; echo build)
 SRC_DIR := ./src
 
 SRC = $(shell find $(SRC_DIR) -name '*.cpp')
