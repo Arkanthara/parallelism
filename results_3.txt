@@ -1,0 +1,56 @@
+Number of circumscribed rectangles: 100000000
+Number of threads used: 1
+Pi approximation: 3.14159
+Execution time: 1.7367
+Number of circumscribed rectangles: 100000000
+Number of threads used: 2
+Pi approximation: 3.14159
+Execution time: 0.838328
+Number of circumscribed rectangles: 100000000
+Number of threads used: 4
+Pi approximation: 3.14159
+Execution time: 0.426309
+Number of circumscribed rectangles: 100000000
+Number of threads used: 8
+Pi approximation: 3.14159
+Execution time: 0.221007
+Number of circumscribed rectangles: 100000000
+Number of threads used: 16
+Pi approximation: 3.14159
+Execution time: 0.114606
+Number of circumscribed rectangles: 100000000
+Number of threads used: 32
+Pi approximation: 3.14159
+Execution time: 0.092002
+Number of circumscribed rectangles: 100000000
+Number of threads used: 64
+Pi approximation: 3.14159
+Execution time: 0.0714777
+Number of circumscribed rectangles: 100000000
+Number of threads used: 128
+Pi approximation: 3.14159
+Execution time: 0.0755563
+Number of circumscribed rectangles: 100000000
+Number of threads used: 256
+Pi approximation: 3.14159
+Execution time: 0.0768185
+Number of circumscribed rectangles: 100000000
+Number of threads used: 512
+Pi approximation: 3.14159
+Execution time: 0.0778905
+Number of circumscribed rectangles: 100000000
+Number of threads used: 1024
+Pi approximation: 3.14159
+Execution time: 0.0949269
+Number of circumscribed rectangles: 100000000
+Number of threads used: 2048
+Pi approximation: 3.14159
+Execution time: 0.125594
+Number of circumscribed rectangles: 100000000
+Number of threads used: 4096
+Pi approximation: 3.14159
+Execution time: 0.225167
+Number of circumscribed rectangles: 100000000
+Number of threads used: 8192
+Pi approximation: 3.14159
+Execution time: 0.340175
