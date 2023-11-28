@@ -1,0 +1,60 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+
+
+note as pi
+    |pi (thread 1)|
+end note
+
+note as t1
+    |pi (thread 1)|
+end note
+
+note as t2
+    |pi (thread 2)|
+end note
+
+note as t3
+    |pi (thread 3)|
+end note
+
+note as t4
+    |pi (thread 4)|
+end note
+
+note as t5
+    |pi (thread 5)|
+end note
+
+note as t6
+    |pi (thread 6)|
+end note
+
+note as t7
+    |pi (thread 7)|
+end note
+
+note as t8
+    |pi (thread 8)|
+end note
+
+note as pi2
+    |pi (thread 1)|
+end note
+
+pi -r-> t1
+pi -r-> t2
+pi -r-> t3
+pi -r-> t4
+pi -r-> t5
+pi -r-> t6
+pi -r-> t7
+pi -r-> t8
+
+@enduml

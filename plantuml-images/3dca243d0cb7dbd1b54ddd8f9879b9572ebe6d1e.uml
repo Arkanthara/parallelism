@@ -1,0 +1,33 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+
+
+note as pi
+    | pi (thread 1) |
+end note
+
+note as t1
+    | pi (thread 1) |
+    | pi (thread 2) |
+    | pi (thread 3) |
+    | pi (thread 4) |
+    | pi (thread 5) |
+    | pi (thread 6) |
+    | pi (thread 7) |
+    | pi (thread 8) |
+end note
+
+note as pi2
+    | pi (thread 1) |
+end note
+
+pi -r-> t1: #pragma omp for
+t1 -r-> pi2: reduce(+ :pi)
+
+@enduml
