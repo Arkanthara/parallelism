@@ -1,0 +1,21 @@
+@startuml
+card grid [
+    0
+    ----
+    1
+    ----
+    2
+    ----
+    3
+    ----
+    4
+    ----
+    5
+]
+
+card gridline [
+    |  0  |  1  |  2  |  3  |  4  |  5  |
+]
+
+grid --> gridline
+@enduml

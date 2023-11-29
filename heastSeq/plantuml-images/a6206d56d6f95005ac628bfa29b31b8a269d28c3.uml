@@ -1,0 +1,30 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |
+    |  row 1  |
+    |  row 2  |
+    |  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+note as im
+    <img:/home/darcy/Documents/parallelism/heastSeq/image.png>
+end note
+
+note as gridline
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+    we are the processor 0
+end note
+
+gridline -r-> grid: convert_to_2D
+grid -r-> im: write_to_bmp
+@enduml

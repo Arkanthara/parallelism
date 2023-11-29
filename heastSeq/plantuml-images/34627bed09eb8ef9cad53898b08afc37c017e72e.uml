@@ -1,0 +1,29 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    shadowing 0
+    linecolor transparent
+}
+</style>
+note as grid
+    |  row 0  |
+    |  row 1  |
+    |  row 2  |
+    |  row 3  |
+    |  row 4  |
+    |  row 5  |
+end note
+
+note as image
+end note
+
+image : <img: T_10000.bmp>
+
+note as gridline
+    |  row 0  |  row 1  |  row 2  |  row 3  |  row 4  |  row 5  |
+end note
+
+gridline -> grid -> image
+@enduml

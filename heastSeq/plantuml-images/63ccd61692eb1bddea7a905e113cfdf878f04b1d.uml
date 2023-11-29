@@ -1,0 +1,16 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im1
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/Size_128.png>
+end note
+note as im2
+    <img:/home/darcy/Documents/parallelism/heastSeq/graph/Size_256.png>
+end note
+
+im1 -[hidden]r-> im2
+@enduml

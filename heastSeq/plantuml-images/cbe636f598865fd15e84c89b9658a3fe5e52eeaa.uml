@@ -1,0 +1,29 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im3
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_1000.png>
+    iteration: 1000
+    time: 0.378882 s
+end note
+
+note as im4
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_10000.png>
+    iteration: 10000
+    time: 9.84631 s
+end note
+
+note as im5
+    <img:/home/darcy/Documents/parallelism/heastSeq/img_100000.png>
+    iteration: 100000
+    time: 105.119 s
+end note
+
+im3 -> im4
+im4 -> im5
+@enduml

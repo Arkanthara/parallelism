@@ -1,0 +1,11 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+note as im1
+    coucou
+end note
+@enduml
