@@ -47,20 +47,22 @@ int main(int argc, char * argv[]) {
 	// The area of a circumscribed rectange is given by delta * f(delta * number of current circumscribed rectangle)
 	#pragma omp parallel
 	{
+		// Get the number of threads
+		// We must be in parallel region to get the number of threads
+		// or we just get one thread because it count the number of active threads.
 		nthread = omp_get_num_threads();
+
+		// Divide work into all threads and add the results of pi of each threads in the variable pi of the thread
+		// which continue the execution of the program after the parallel region
 		#pragma omp for reduction(+ :pi)
 		for (int i = 1; i < n + 1; i++) {
 			pi += delta * f(i*delta);
 		}
 	}
-	/* TO FIX
-	// Get the number of threads
-	// We must be in parallel region to get the number of threads
-	// or we just get one thread because it count the number of thread in execution
-	nthread = omp_get_num_threads();
-	*/
 
+	// Print number of circumscribed rectangles
 	cout << "Number of circumscribed rectangles: " << n << endl;
+
 	// Print number of thread used
 	cout << "Number of threads used: " << nthread << endl;
 
@@ -74,7 +76,4 @@ int main(int argc, char * argv[]) {
 	cout << "Execution time: " << end - start << endl;
 
 	return 0;
-
-
-
 }
