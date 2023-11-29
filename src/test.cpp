@@ -27,7 +27,7 @@ void print_grid(vector<vector<int>> grid, int size) {
 }
 
 
-vector<vector<int>> convert_to_2D(vector<int> grid_line, vector<vector<int>> grid, int size) {
+vector<vector<double>> convert_to_2D(vector<double> grid_line, vector<vector<double>> grid, int size) {
         int n = 0;
         for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
@@ -42,14 +42,12 @@ vector<vector<int>> convert_to_2D(vector<int> grid_line, vector<vector<int>> gri
 int main(int argc, char * argv[]) {
 
 
-	Window frac_br = Window(1000, 1000);
-	Window frac_tl = Window(0, 0);
-	Window pix_tl = Window(0, 0);
-	Window pix_br = Window(1000, 1000);
+	Window frac_br = Window(500, 500);
+	Window frac_tl = Window(400, 400);
 
-	int iterations = 1e2;
-	vector<int> pFractal(1000000);
-	vector<vector<int>> View;
+	int iterations = 25;
+	vector<double> pFractal(78*22);
+	vector<vector<double>> View;
 	View.resize(1000);
 	for (int i = 0; i < 1000; i++) {
 		View[i].resize(1000);
@@ -61,8 +59,8 @@ int main(int argc, char * argv[]) {
 	double x_scale = (frac_br.x - frac_tl.x) / 1000.;
 	double y_scale = (frac_br.y - frac_tl.y) / 1000.;
 
-	for (int y = 0; y < 1000; y++) {
-		for (int x = 0; x < 1000; x++) {
+	for (int y = 0; y < 78; y++) {
+		for (int x = 0; x < 22; x++) {
 			complex <double> c(x * x_scale + frac_tl .x, y * y_scale + frac_tl .y);
 			complex <double> z(0, 0);
 			int n = 0;
@@ -70,12 +68,15 @@ int main(int argc, char * argv[]) {
 				z = (z * z) + c;
 				n++;
 			}
-			pFractal[y * 1000 + x] = n;
+			cout << (n == iterations ? '0':'.');
+			pFractal[y * 78 + x] = (double)n/(double)iterations;
 		}
+		cout << endl;
 	}
-	cout << "Min: " << *min_element(pFractal.begin(), pFractal.end()) << "Max: " << *max_element(pFractal.begin(), pFractal.end()) << endl;
-	View = convert_to_2D(pFractal, View, 1000);
-	write_to_bmp(iterations,View,1, *min_element(pFractal.begin(), pFractal.end()), *max_element(pFractal.begin(), pFractal.end()));
+	// cout << "Min: " << *min_element(pFractal.begin(), pFractal.end()) << "Max: " << *max_element(pFractal.begin(), pFractal.end()) << endl;
+	//View = convert_to_2D(pFractal, View, 1000);
+	// write_to_bmp(iterations,View,1, *min_element(pFractal.begin(), pFractal.end()), *max_element(pFractal.begin(), pFractal.end()));
+	//write_to_bmp(1000, View, 1, 0., 1.);
 
 	return 0;
 }

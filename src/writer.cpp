@@ -7,7 +7,7 @@
 using namespace std;
 
 // Write the data to an image in the raw BMP format.
-void write_to_bmp(int N, std::vector<std::vector<int>>& data, int iter, double minval, double maxval)
+void write_to_bmp(int N, std::vector<std::vector<double>>& data, int iter, double minval, double maxval)
 {
     unsigned char bmpfileheader[14] = {'B','M',0,0,0,0,0,0,0,0,54,0,0,0};
     unsigned char bmpinfoheader[40] = { 40, 0,  0, 0,
