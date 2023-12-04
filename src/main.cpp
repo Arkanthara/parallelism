@@ -2,6 +2,7 @@
 #include <vector>
 #include <complex>
 #include <omp.h>
+#include <unistd.h>
 #include "writer.hpp"
 
 using namespace std;
@@ -11,76 +12,63 @@ using std::complex;
 
 int main(int argc, char * argv[]) {
 
-	// Define top left coordinate and bottom right coordinate
-	// Default value are respectively (0, 0) and (1000, 1000)
-	vector<int> tl(2, -2);
-	vector<int> br(2, 2);
-	vector<double> pFractal(1000*1000, 0);
-
-
-	int iterations = 1000;
-	int nthreads;
-
 	// Get the time
 	double start = omp_get_wtime();
-
-	// If there is no input of the user, we init top left to (0, 0)
-	if (argc == 5) {
-		tl[0] = atoi(argv[1]);
-		tl[1] = atoi(argv[2]);
-		br[0] = atoi(argv[3]);
-		br[1] = atoi(argv[4]);
-		if (tl[0] >= br[0] || tl[1] >= br[1]) {
-			cerr << "Error ! bad coordinate values ! Coordinate of top left (tl) must be less than bottom right (br) coordinate"<< endl;
-			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
-			return -1;
-		}
-	}
-
-	else if (argc == 2) {
-		nthreads = atoi(argv[1]);
-		if (nthreads == 0) {
-			cerr << "Error ! You must give a number of threads greater than 0 !" << endl;
-			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
-			return -1;
-		}
-		omp_set_num_threads(nthreads);
-	}
 	
-	else if (argc == 3) {
-		nthreads = atoi(argv[1]);
-		if (nthreads == 0) {
-			cerr << "Error ! You must give a number of threads greater than 0 !" << endl;
-			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
-			return -1;
-		}
-		omp_set_num_threads(nthreads);
-		iterations = atoi(argv[2]);
-		if (iterations <= 0)  {
-			cerr << "Error ! Number of iterations must more than 0 !" << endl;
-			return -1;
-		}
-	}
+	// Define top left coordinate and bottom right coordinate
+	// Default value are respectively (-2, -2) and (2, 2)
+	vector<double> tl(2, -2.);
+	vector<double> br(2, 2.);
+	vector<double> pFractal(1000*1000, 0);
 
-	else if (argc == 6) {
-		nthreads = atoi(argv[1]);
-		if (nthreads == 0) {
-			cerr << "Error ! You must give a number of threads greater than 0 !" << endl;
-			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
-			return -1;
-		}
-		omp_set_num_threads(nthreads);
-		tl[0] = atoi(argv[2]);
-		tl[1] = atoi(argv[3]);
-		br[0] = atoi(argv[4]);
-		br[1] = atoi(argv[5]);
-		if (tl[0] >= br[0] || tl[1] >= br[1]) {
-			cerr << "Error ! bad coordinate values ! Coordinate of top left (tl) must be less than bottom right (br) coordinate"<< endl;
-			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
-			return -1;
+	// Define the number of iterations
+	int iterations = 100;
+
+	int option, nthreads;
+
+	// Indicate we don't want that getopt print if the option is not known, because we want to have negative numbers as parameter
+	// and negative numbers are recognized as unknow option...
+	opterr = 0;
+	while ((option = getopt(argc, argv, "i:n:c:h")) != -1) {
+		switch (option) {
+			case 'i':
+				iterations = atoi(optarg);
+				if (iterations <= 0) {
+					cerr << "Error ! number of iterations must be greater than 0" << endl;
+					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					return -1;
+				}
+				break;
+			case 'n':
+				nthreads = atoi(optarg);
+				if (nthreads <= 0) {
+					cerr << "Error ! Number of threads must be positive" << endl;
+					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					return -1;
+				}
+				omp_set_num_threads(nthreads);
+				break;
+			case 'c':
+				if (argc - optind < 3) {
+					cerr << "Error ! You must give tl_x tl_y br_x br_y and there is not enought arguments" << endl;
+					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					return -1;
+				}
+				tl[0] = stod(argv[optind - 1]);
+				tl[1] = stod(argv[optind]);
+				br[0] = stod(argv[optind + 1]);
+				br[1] = stod(argv[optind + 2]);
+				if (tl[0] >= br[0] || tl[1] >= br[1]) {
+					cerr << "Error ! bad coordinate values ! Coordinate of top left (tl) must be less than bottom right (br) coordinates"<< endl;
+					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					return -1;
+				}
+				break;
+			case 'h':
+				cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+				return -1;
 		}
 	}
-	
 
 	// Define scale
 	double x_scale = (br[0] - tl[0]) / 1000.;
@@ -89,8 +77,10 @@ int main(int argc, char * argv[]) {
 	// Calculate our fractal. Collapse is used to merge the two for loop.
 	#pragma omp parallel
 	{
+		// Get number of threads
 		nthreads = omp_get_num_threads();
 
+		// Merge two for loop into a big for loop and divide work between all active threads
 		#pragma omp for collapse(2)
 		for (int y = 0; y < 1000; y++) {
 			for (int x = 0; x < 1000; x++) {
@@ -118,6 +108,9 @@ int main(int argc, char * argv[]) {
 
 	// Print number of threads
 	cout << "Number of threads: " << nthreads << endl;
+
+	// Print number of iterations
+	cout << "Number of iterations: " << iterations << endl;
 
 	return 0;
 }

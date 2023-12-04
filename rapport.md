@@ -39,10 +39,57 @@ Lorsque l'on compile et exécute le code, on obtient la structure suivante:
 ├── T_0256.bmp
 └── tp5
 ```
-On a tp5 qui est notre exécutable, et le résultat de notre fractal est enregistré dans le fichier `.bmp`.
+On a tp5 qui est notre exécutable, et le résultat de notre fractal est enregistré dans le fichier `.bmp`, qui possède dans son nom le nombre d'itérations utilisé.
 J'ai réutilisé le writer.cpp du travail pratique 3 afin de créer le fichier `.bmp` pour visualiser le résultat obtenu.
 
 Dans une première partie de mon code, je m'occupe de traiter les informations données par l'utilisateur afin de bien initialiser notre fractal.
+Pour cela, j'utilise la fonction getopt définie dans `unistd.h`. Cette fonction détecte les options données à notre programme.
+```C++
+while ((option = getopt(argc, argv, "i:n:c:h")) != -1) {
+		switch (option) {
+            // Look after options here
+        }
+}
+```
+Ici, on boucle sur `getopt` tant que celui-ci trouve des options (qui sont toujours précédées par `-`).
+Quand `getopt` ne trouve plus d'options, il renvoie `-1`. À ce moment, on quitte la boucle.
+Les options acceptées sont données par `"i:n:c:h"`. Le `:` après l'option signifie que celle-ci prend au moins un paramètre.
+C'est uniquement utile pour récupérer directement le paramètre de la fonction dans la variable `optarg` de `getopt`.
+Avant d'appeler `getopt`, je met la variable `opterr` de `getopt` à 0, ce qui évite que `getopt` affiche des commentaires sur la sortie standard.
+
+On peut donner comme option le nombre d'itérations:
+```bash
+./tp5 -i 256
+```
+On peut également donner comme option le nombre de threads actifs en section parallèle:
+```bash
+./tp5 -n 16
+```
+On peut donner comme option les coordonnées du `top left` (`tl`) et du `bottom right` (`br`) de la vue de notre fractal.
+```bash
+./tp5 -c -1 -1 1 1
+```
+Enfin, on peut afficher une aide:
+```bash
+./tp5 -h
+
+Usage: ./tp5 -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]
+```
+
+Si on donne aucun paramètre, le nombre d'itérations par défaut est 100, et la vue par défaut de notre fractal est `tl(-2, -2)` et `br(2, 2)`.
+Le nombre par défaut de thread est donné par notre machine.
+
+On peut combiner les paramètres entre eux... Voici le résultat de cette exécution:
+```bash
+./tp5 -i 250 -n 16 -c -1 -1 1 1
+
+Execution time: 0.871114
+Number of threads: 16
+Number of iterations: 250
+```
+
+Dans le `switch`, si l'option `n` est donnée, alors on met à jour le nombre de threads qui seront actifs en section parallèle.
+Pour ce faire, on utilise la primitive `omp_set_num_threads(nthreads)`, et on lui donne en paramètre un nombre qui sera le nombre de threads actifs en section parallèle.
 
 Le coeur de mon code se passe dans ces lignes:
 ```C++
