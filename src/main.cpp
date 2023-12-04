@@ -18,7 +18,7 @@ int main(int argc, char * argv[]) {
 	vector<double> pFractal(1000*1000, 0);
 
 
-	int iterations = 30;
+	int iterations = 1000;
 	int nthreads;
 
 	// Get the time
@@ -45,6 +45,21 @@ int main(int argc, char * argv[]) {
 			return -1;
 		}
 		omp_set_num_threads(nthreads);
+	}
+	
+	else if (argc == 3) {
+		nthreads = atoi(argv[1]);
+		if (nthreads == 0) {
+			cerr << "Error ! You must give a number of threads greater than 0 !" << endl;
+			cout << "Usage: " << argv[0] << " [optionnal: number of threads] [optionnal: tl_x tl_y br_x br_y]" << endl;
+			return -1;
+		}
+		omp_set_num_threads(nthreads);
+		iterations = atoi(argv[2]);
+		if (iterations <= 0)  {
+			cerr << "Error ! Number of iterations must more than 0 !" << endl;
+			return -1;
+		}
 	}
 
 	else if (argc == 6) {
@@ -93,7 +108,7 @@ int main(int argc, char * argv[]) {
 
 
 	// Usefull to see the result obtained
-	write_to_bmp(1000, pFractal, 0, 0, 1);
+	write_to_bmp(1000, pFractal, iterations, 0, 1);
 
 	// Get the time
 	double end = omp_get_wtime();
