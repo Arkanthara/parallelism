@@ -226,6 +226,17 @@ note as img_2
     <img:/home/darcy/Documents/parallelism/images/view_2.png>
     View: tl(-2, -2) & br(2, 2)
 end note
+
+note as img_3
+    <img:/home/darcy/Documents/parallelism/images/view_3.png>
+    View: tl(-0.25, -0.25) & br(0.25, 0.25)
+end note
+
+note as img_4
+    <img:/home/darcy/Documents/parallelism/images/view_4.png>
+    View: tl(3, 3) & br(4, 4)
+end note
+
 @enduml
 ```
 
