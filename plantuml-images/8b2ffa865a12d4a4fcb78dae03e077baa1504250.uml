@@ -1,0 +1,12 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as nthreads
+    <img:/home/darcy/Documents/parallelism/images/threads.png>
+end note
+@enduml

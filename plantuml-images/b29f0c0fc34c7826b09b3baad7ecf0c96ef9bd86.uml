@@ -1,0 +1,12 @@
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as iter
+    <img:/home/darcy/Documents/parallelism/images/iterations.png>
+end note
+@enduml

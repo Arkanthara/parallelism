@@ -13,7 +13,7 @@ Dans ce travail pratique, nous allons utiliser openmp et C++ pour calculer l'ens
 L'objectif de ce travail pratique est de paralléliser le code permettant de calculer l'ensemble de Mandelbrot et de varier le nombre de threads s'exécutant pour calculer cet ensemble.
 Afin de faire un petit rappel, un processus est un programme qui est en cours d'exécution, et chaque processus possède sa propre mémoire virtuelle. Les threads composent un processus, ils se partagent la mémoire virtuelle du processus, mais chacun possède sa propre pile d'exécution. On va donc faire varier le nombre de threads du processus et observer les différences du temps d'exécution du programme.
 
-# Methodologie (Brief explanation of your code structure and OpenMP implementation)
+# Méthodologie
 
 Voici la structure de mon code:
 
@@ -159,7 +159,7 @@ afin d'accéder aux éléments de `data` comme si c'était un vecteur 2D alors q
 
 Enfin, à la fin du code, on affiche les différents résultats, comme le temps d'exécution du programme (donné en secondes), le nombre de threads et le nombre d'itérations utilisé.
 
-# Résultats (Include execution time graphs for different thread configurations)
+# Résultats
 
 J'ai exécuté mon programme en variant la région où on calcule notre fractal (en changeant les coordonnées de `top left` et de `bottom right`), en variant le nombre d'itérations et en variant le nombre de threads utilisés pour effectuer le calcul. Voici les résultats que j'ai pu obtenir en variant le nombre d'itérations:
 ```plantuml
@@ -240,7 +240,103 @@ end note
 @enduml
 ```
 
-# Discussion (Explain any observed scaling behavior and performance differences)
+Si on regarde le temps d'exécution de notre programme pour 32 threads actifs pour un nombre variant d'itérations, on a la courbe suivante:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as iter
+    <img:/home/darcy/Documents/parallelism/images/iterations.png>
+end note
+@enduml
+```
+On peut remarquer que le temps d'exécution augmente linéairement, voire quadratiquement.
+Pour la suite des calculs, j'ai fixé le nombre d'itérations à 256 car cela permet d'avoir des calculs suffisamment important pour pouvoir observer des différences notables dans les temps d'exécutions en fonction du nombre de threads utilisé.
+
+Ensuite, j'ai décidé de faire varier le nombre de threads actifs en région parallèle pour différentes régions:
+
+J'ai choisi une région permettant de voir une vue globale (tl(-2, -2) & br(2, 2)) et toute notre fractal est définie dans cette région car on a fixé sa définition au cercle de rayon 2 en bornant la valeur absolue de z par 2.
+J'ai également choisi une région permettant d'avoir une vue d'un peu plus près (tl(-1, -1) & br(1, 1)), une autre région (tl(-0.25, -0.25) & br(0.25, 0.25)) qui apparaît en rouge car elle est entièrement dans la fractal, et une région complètement en dehors de la fractal (tl(3, 3) & br(4, 4)), qui apparaît alors en bleu dans les images montrant les différentes régions choisies.
+
+J'ai obtenu pour ces régions choisies les temps d'exéctutions suivant:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as nthreads
+    <img:/home/darcy/Documents/parallelism/images/threads.png>
+end note
+@enduml
+```
+
+
+# Discussion
+
+Afin de pouvoir discuter plus facilement du comportement et des performances du programme, j'ai calculé un speed up ampirique, permettant de déterminer l'efficacité de la parallélisation, que j'ai défini de la sorte:
+$$S = \frac{T_{seq}}{T_{par}} \approx \frac{\text{Time execution with one thread}}{\text{Time execution (with one or more threads)}}$$
+Cela me donne le graphique suivant:
+```plantuml
+@startuml
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as speedup
+    <img:/home/darcy/Documents/parallelism/images/speed_up.png>
+end note
+@enduml
+```
+Nous pouvons observer des choses intéressantes grâce aux deux graphiques.
+
+Tout d'abord, le temps d'exécution et le speed up restent constant dans un cas où on se trouve dans la région qui n'est pas du tout dans la fractal.
+Mais on peut constater qu'à la fin, pour un nombre très élevé de threads, le temps d'exécution se met à augmenter et dépasse le temps d'exécution mis avec 1 thread.
+Cela est dû au problème de l'overhead: il y a beaucoup de threads actifs, mais tous n'ont pas forcément du travail à faire.
+Cela est également dû au fait que la division du travail entre tous les threads est de plus en plus grand et le temps de calcul de chaque thread est de plus en plus petit, ce qui fait également augmenter le temps de calcul car les threads passent alors plus de temps à discuter entre eux, plutôt qu'à travailler.
+Ces raisons expliquent également pourquoi le speed up atteint un sommet, puis diminue après avoir atteint ce sommet, car du temps est perdu car on peut avoir plus de threads actifs que de travail, ou encore on peut également avoir une division du travail qui prend un temps de plus en plus élevé, et le travail à exécuter devenant de plus en plus petit.
+
+Ensuite, nous pouvons constater que le temps d'exécution pour la vue générale et la région un peu plus rapprochée possèdent des anomalies: cela ne ressemble pas à une jolie courbe, comme par exemple la courbe obtenue par les temps d'exécutions pour la région à l'intérieur de l'ensemble de Mandelbrot.
+Je pense que cela est causé par une indisposition des ressources dans baobab, mais j'avoue que je ne comprend pas trop pourquoi on a ces anomalies.
+
+
+Une autre chose que l'on peut constater est que plus on a des éléments dans l'ensemble de Mandelbrot, plus le temps d'exécution est élevé. Cela est tout à fait logique, car les éléments de l'ensemble de Mandelbrot vont itérer un grand nombre de fois dans la boucle donnée par:
+```C++
+ 
+while (abs(z) < 2. && n < iterations) {
+	z = (z * z) + c;
+	n++;
+}
+```
+car ils vont itérer jusqu'à un nombre proche de `iterations`, indiquant ainsi qu'ils appartiennent à l'ensemble de Mandelbrot.
+
+On peut également remarquer que plus le travail est grand, plus le speed up est élevé, car pour la région se trouvant entièrement dans l'ensemble de Mandelbrot, le temps d'exécution est plus élevé, pour la raison mentionnée précédement, et le speed up est également le plus élevé, ce qui signifie que la division du problème en plusieurs threads est plus efficace lorsque le problème est plus grand, ce qui vérifie la loi de Gustafson disant que la parallélisation est plus efficace pour les plus grands problèmes.
+ 
+Enfin, on peut remarquer que le nombre de threads maximisant le speed up est donné par approximativement $2^{4}$ pour la région à l'extérieur de l'ensemble de Mandelbrot, $2^{7}$ pour la vue d'ensemble, $2^{9}$ pour la région un peu plus rapprochée de l'ensemble de Mandelbrot et pour la région à l'intérieur de l'ensemble de Mandelbrot.
+Et à chaque fois que le nombre de threads maximisant le speed up est élevé, on a que le speed up est plus élevé que lorsqu'un nombre faible de threads maximise le speed up.
+On peut alors observer que la loi de Gustafson est à nouveau vérifiée, car cela montre que plus le problème est élevé, plus on a besoin de threads pour maximiser le speed up, mais plus le speed up est élevé, donc plus la parallélisation est efficace.
+
+
+
 # Conclusion
 
+L'étude du temps d'exécution de notre programme calculant l'ensemble de Mandelbrot nous a permis de vérifier ampiriquement la loi de Gustafson: on a effectivement pu constater que plus le travail est conséquent, et plus le speed up est élevé, mais plus le nombre de threads maximisant le speed up est élevé.
+Mais si on dépasse le nombre de threads maximisant le speed up, on a le speed up qui diminue, donc l'efficacité de notre parallélisation devient moins bonne.
+En effet, si on a trop de threads actifs pour exécuter les sections parallèles, on a des problèmes de overhead et également de temps de "discussion" entre threads augmentant de manière significative comparée au temps de travail de chaque thread.
 
+Pour conclure, pour chaque problème donné, on a plusieurs défis à relever.
+Tout d'abord, on doit essayer de paralléliser le plus possible le code.
+Ensuite, lorsque le code est parallélisé, on doit trouver le nombre de threads maximisant l'efficacité de la parallélisation.
+
+Il faut donc trouver le juste équilibre pour chaque programme entre nombre de threads utilisé et gain de performance.
