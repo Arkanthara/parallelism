@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 iterations_32 = [
         0.0927524,
@@ -32,6 +33,23 @@ view = [
         0.466096,
         0.512826,
         0.640315
+        ]
+
+view_2 = [
+        8.38126,
+        3.96818,
+        3.23257,
+        2.37587,
+        0.860725,
+        0.949961,
+        0.610521,
+        0.572536,
+        0.536241,
+        0.484519,
+        0.585521,
+        0.624764,
+        0.737935,
+        0.75883
         ]
 
 nthreads = [
@@ -71,17 +89,44 @@ nthreads_2 = [
 threads = [2**i for i in range(14)]
 
 plt.figure()
-plt.plot(threads, iterations_32, label='iterations')
+plt.plot(threads, iterations_32)
 plt.xscale('log', base=2)
+plt.xlabel("Number of iterations")
+plt.ylabel("Time execution")
 plt.legend()
 plt.show()
 
 plt.figure()
-plt.plot(threads, view, label='view changed')
-plt.plot(threads, nthreads, label='Change number of threads')
-plt.plot(threads, nthreads_2, label='Change number of threads')
+plt.plot(threads, view, label='tl(-1, -1) & br(1, 1)')
+plt.plot(threads, view_2, label='tl(-1, -1) & br(1, 1)')
+plt.plot(threads, nthreads, label='tl(-2, -2) & br(2, 2)')
+plt.plot(threads, nthreads_2, label='tl(-2, -2) & br(2, 2)')
+plt.xlabel("Number of threads")
+plt.ylabel("Time execution")
 plt.legend()
 plt.xscale('log', base=2)
 plt.show()
+
+
+view = np.array(view)
+view_2 = np.array(view_2)
+nthreads = np.array(nthreads)
+nthreads_2 = np.array(nthreads_2)
+
+average_view = (view + view_2) / 2
+average_nthreads = (nthreads + nthreads_2) / 2
+
+speed_up_view = average_view[0]/average_view
+speed_up_nthreads = average_nthreads[0]/average_nthreads
+
+plt.figure()
+plt.plot(threads, speed_up_view, label='tl(-1, -1) & br(1, 1)')
+plt.plot(threads, speed_up_nthreads, label='tl(-1, -1) & br(1, 1)')
+plt.xlabel("Number of threads")
+plt.ylabel("Speed up")
+plt.xscale('log', base=2)
+plt.legend()
+plt.show()
+
 
 

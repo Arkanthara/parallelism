@@ -159,7 +159,76 @@ afin d'accéder aux éléments de `data` comme si c'était un vecteur 2D alors q
 
 Enfin, à la fin du code, on affiche les différents résultats, comme le temps d'exécution du programme (donné en secondes), le nombre de threads et le nombre d'itérations utilisé.
 
-# Results (Include execution time graphs for different thread configurations)
+# Résultats (Include execution time graphs for different thread configurations)
+
+J'ai exécuté mon programme en variant la région où on calcule notre fractal (en changeant les coordonnées de `top left` et de `bottom right`), en variant le nombre d'itérations et en variant le nombre de threads utilisés pour effectuer le calcul. Voici les résultats que j'ai pu obtenir en variant le nombre d'itérations:
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/iter_30.png>
+    Iterations: 30
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/iter_50.png>
+    Iterations: 50
+end note
+
+note as img_3
+    <img:/home/darcy/Documents/parallelism/images/iter_100.png>
+    Iterations: 100
+end note
+
+note as img_4
+    <img:/home/darcy/Documents/parallelism/images/iter_150.png>
+    Iterations: 150
+end note
+
+note as img_5
+    <img:/home/darcy/Documents/parallelism/images/iter_200.png>
+    Iterations: 200
+end note
+
+note as img_6
+    <img:/home/darcy/Documents/parallelism/images/iter_256.png>
+    Iterations: 256
+end note
+
+
+@enduml
+```
+
+Et voici le résultat obtenu en variant la région:
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/view_1.png>
+    View: tl(-1, -1) & br(1, 1)
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/view_2.png>
+    View: tl(-2, -2) & br(2, 2)
+end note
+@enduml
+```
+
 # Discussion (Explain any observed scaling behavior and performance differences)
 # Conclusion
 

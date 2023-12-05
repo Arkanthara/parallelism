@@ -1,0 +1,46 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/T_0030.bmp>
+    Iterations: 30
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/T_0050.bmp>
+    Iterations: 50
+end note
+
+note as img_3
+    <img:/home/darcy/Documents/parallelism/images/T_0100.bmp>
+    Iterations: 100
+end note
+
+note as img_4
+    <img:/home/darcy/Documents/parallelism/images/T_0150.bmp>
+    Iterations: 150
+end note
+
+note as img_5
+    <img:/home/darcy/Documents/parallelism/images/T_0200.bmp>
+    Iterations: 200
+end note
+
+note as img_6
+    <img:/home/darcy/Documents/parallelism/images/T_0256.bmp>
+    Iterations: 256
+end note
+
+img_1 -r-> img_2
+img_2 -r-> img_3
+img_1 -[hidden]d->img_4
+img_4 -r-> img_5
+img_5 -r-> img_6
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/view_1.png>
+    View: tl(-1, -1) & br(1, 1)
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/view_2.png>
+    View: tl(-2, -2) & br(2, 2)
+end note
+@enduml
