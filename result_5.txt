@@ -1,0 +1,42 @@
+Execution time: 2.58466
+Number of threads: 1
+Number of iterations: 256
+Execution time: 1.03524
+Number of threads: 2
+Number of iterations: 256
+Execution time: 1.46482
+Number of threads: 4
+Number of iterations: 256
+Execution time: 1.03745
+Number of threads: 8
+Number of iterations: 256
+Execution time: 0.883901
+Number of threads: 16
+Number of iterations: 256
+Execution time: 0.723237
+Number of threads: 32
+Number of iterations: 256
+Execution time: 0.281151
+Number of threads: 64
+Number of iterations: 256
+Execution time: 0.197465
+Number of threads: 128
+Number of iterations: 256
+Execution time: 0.279353
+Number of threads: 256
+Number of iterations: 256
+Execution time: 0.235694
+Number of threads: 512
+Number of iterations: 256
+Execution time: 0.317157
+Number of threads: 1024
+Number of iterations: 256
+Execution time: 0.240116
+Number of threads: 2048
+Number of iterations: 256
+Execution time: 0.365295
+Number of threads: 4098
+Number of iterations: 256
+Execution time: 0.59358
+Number of threads: 8192
+Number of iterations: 256
