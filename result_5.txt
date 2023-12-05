@@ -31,12 +31,12 @@ Number of iterations: 256
 Execution time: 0.317157
 Number of threads: 1024
 Number of iterations: 256
+Execution time: 0.240116
+Number of threads: 2048
+Number of iterations: 256
 Execution time: 0.365295
 Number of threads: 4098
 Number of iterations: 256
 Execution time: 0.59358
 Number of threads: 8192
-Number of iterations: 256
-Execution time: 0.240116
-Number of threads: 2048
 Number of iterations: 256

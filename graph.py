@@ -13,23 +13,8 @@ iterations_32 = [
         0.478377,
         0.898569,
         1.6809,
-        3.18388
-        ]
-
-nthreads = [
-        1.76043,
-        0.913848,
-        0.902653,
-        0.501021,
-        0.28755,
-        0.23615,
-        0.207469,
-        0.192964,
-        0.189018,
-        0.205916,
-        0.234047,
-        0.320818,
-        0.656128
+        3.18388,
+        9.54489
         ]
 
 view = [
@@ -49,16 +34,52 @@ view = [
         0.640315
         ]
 
-threads = [2**i for i in range(13)]
+nthreads = [
+        2.85318,
+        1.45077,
+        1.41677,
+        1.2684,
+        0.706657,
+        0.476348,
+        0.453911,
+        0.297427,
+        0.218366,
+        0.264218,
+        0.28844,
+        0.319663,
+        0.401562,
+        0.653384
+        ]
+
+nthreads_2 = [
+        2.58466,
+        1.03524,
+        1.46482,
+        1.03745,
+        0.883901,
+        0.723237,
+        0.281151,
+        0.197465,
+        0.279353,
+        0.235694,
+        0.317157,
+        0.240116,
+        0.365295,
+        0.59358
+        ]
+
+threads = [2**i for i in range(14)]
 
 plt.figure()
 plt.plot(threads, iterations_32, label='iterations')
+plt.xscale('log', base=2)
 plt.legend()
 plt.show()
 
 plt.figure()
 plt.plot(threads, view, label='view changed')
 plt.plot(threads, nthreads, label='Change number of threads')
+plt.plot(threads, nthreads_2, label='Change number of threads')
 plt.legend()
 plt.xscale('log', base=2)
 plt.show()
