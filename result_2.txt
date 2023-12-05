@@ -37,3 +37,6 @@ Number of iterations: 256
 Execution time: 0.656128
 Number of threads: 8192
 Number of iterations: 256
+Execution time: 1.27292
+Number of threads: 8
+Number of iterations: 256

@@ -37,3 +37,6 @@ Number of iterations: 2048
 Execution time: 3.18388
 Number of threads: 32
 Number of iterations: 4096
+Execution time: 9.54489
+Number of threads: 32
+Number of iterations: 8192
