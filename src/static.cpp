@@ -25,7 +25,7 @@ int main(int argc, char * argv[]) {
 	br[1] = 0.35756;
 	vector<double> pFractal(1000*1000, 0);
 
-	int chunk_size = 1;
+	int chunk_size = 16;
 
 	// Define the number of iterations
 	int iterations = 256;
@@ -102,7 +102,7 @@ int main(int argc, char * argv[]) {
 		nthreads = omp_get_num_threads();
 
 		// Merge two for loop into a big for loop and divide work between all active threads
-		#pragma omp for schedule(static, 1) collapse(2)
+		#pragma omp for schedule(static, 16) collapse(2)
 		for (int y = 0; y < 1000; y++) {
 			for (int x = 0; x < 1000; x++) {
 				complex<double> c(x * x_scale + tl[0], y * y_scale + tl[1]);
