@@ -110,7 +110,7 @@ int main(int argc, char * argv[]) {
 		nthreads = omp_get_num_threads();
 
 		// Merge two for loop into a big for loop and divide work between all active threads
-		#pragma omp for collapse(2) schedule(dynamic, chunk_size)
+		#pragma omp for schedule(dynamic, chunk_size) collapse(2)
 		for (int y = 0; y < 1000; y++) {
 			for (int x = 0; x < 1000; x++) {
 				complex<double> c(x * x_scale + tl[0], y * y_scale + tl[1]);
