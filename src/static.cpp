@@ -17,28 +17,34 @@ int main(int argc, char * argv[]) {
 	
 	// Define top left coordinate and bottom right coordinate
 	// Default value are respectively (-2, -2) and (2, 2)
-	vector<double> tl(2, -2.);
-	vector<double> br(2, 2.);
+	vector<double> tl(2);
+	vector<double> br(2);
+	tl[0] = 0.3602;
+	tl[1] = 0.35656;
+	br[0] = 0.3612;
+	br[1] = 0.35756;
 	vector<double> pFractal(1000*1000, 0);
 
 	int chunk_size = 1;
-	omp_sched_t sched_type = omp_sched_auto;
 
 	// Define the number of iterations
-	int iterations = 100;
+	int iterations = 256;
 
 	int option, nthreads;
 
 	// Indicate we don't want that getopt print if the option is not known, because we want to have negative numbers as parameter
 	// and negative numbers are recognized as unknow option...
 	opterr = 0;
-	while ((option = getopt(argc, argv, "i:n:c:hd:s:")) != -1) {
+	while ((option = getopt(argc, argv, "i:n:c:h")) != -1) {
 		switch (option) {
 			case 'i':
 				iterations = atoi(optarg);
 				if (iterations <= 0) {
 					cerr << "Error ! number of iterations must be greater than 0" << endl;
-					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					cout << "Usage: " << argv[0] << endl;
+					cout << "	-i [iterations]" << endl;
+					cout << "	-n [number of threads]" << endl;
+					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
 					return -1;
 				}
 				break;
@@ -46,7 +52,10 @@ int main(int argc, char * argv[]) {
 				nthreads = atoi(optarg);
 				if (nthreads <= 0) {
 					cerr << "Error ! Number of threads must be positive" << endl;
-					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					cout << "Usage: " << argv[0] << endl;
+					cout << "	-i [iterations]" << endl;
+					cout << "	-n [number of threads]" << endl;
+					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
 					return -1;
 				}
 				omp_set_num_threads(nthreads);
@@ -54,7 +63,10 @@ int main(int argc, char * argv[]) {
 			case 'c':
 				if (argc - optind < 3) {
 					cerr << "Error ! You must give tl_x tl_y br_x br_y and there is not enought arguments" << endl;
-					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					cout << "Usage: " << argv[0] << endl;
+					cout << "	-i [iterations]" << endl;
+					cout << "	-n [number of threads]" << endl;
+					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
 					return -1;
 				}
 				tl[0] = stod(argv[optind - 1]);
@@ -63,22 +75,18 @@ int main(int argc, char * argv[]) {
 				br[1] = stod(argv[optind + 2]);
 				if (tl[0] >= br[0] || tl[1] >= br[1]) {
 					cerr << "Error ! bad coordinate values ! Coordinate of top left (tl) must be less than bottom right (br) coordinates"<< endl;
-					cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+					cout << "Usage: " << argv[0] << endl;
+					cout << "	-i [iterations]" << endl;
+					cout << "	-n [number of threads]" << endl;
+					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
 					return -1;
 				}
 				break;
-			case 'd':
-				sched_type = omp_sched_dynamic;
-				chunk_size = atoi(optarg);
-				omp_set_schedule(omp_sched_dynamic, chunk_size);
-				break;
-			case 's':
-				sched_type = omp_sched_static;
-				chunk_size = atoi(optarg);
-				omp_set_schedule(omp_sched_static, chunk_size);
-				break;
 			case 'h':
-				cout << "Usage: " << argv[0] << " -i [iterations] -n [number of threads] -c [tl_x tl_y br_x br_y]" << endl;
+				cout << "Usage: " << argv[0] << endl;
+				cout << "	-i [iterations]" << endl;
+				cout << "	-n [number of threads]" << endl;
+				cout << "	-c [tl_x tl_y br_x br_y]" << endl;
 				return -1;
 		}
 	}
@@ -93,11 +101,8 @@ int main(int argc, char * argv[]) {
 		// Get number of threads
 		nthreads = omp_get_num_threads();
 
-		// Get schedule informations
-		omp_get_schedule(&sched_type, &chunk_size);
-
 		// Merge two for loop into a big for loop and divide work between all active threads
-		#pragma omp for collapse(2)
+		#pragma omp for collapse(2) schedule(static, 1)
 		for (int y = 0; y < 1000; y++) {
 			for (int x = 0; x < 1000; x++) {
 				complex<double> c(x * x_scale + tl[0], y * y_scale + tl[1]);
@@ -129,25 +134,8 @@ int main(int argc, char * argv[]) {
 	cout << "Number of iterations: " << iterations << endl;
 
 	// Print schedule informations
-	cout << "Schedule: ";
-	switch (sched_type) {
-		case omp_sched_auto:
-			cout << "auto";
-			break;
-		case omp_sched_static:
-			cout << "static";
-			break;
-		case omp_sched_dynamic:
-			cout << "dynamic";
-			break;
-		case omp_sched_guided:
-			cout << "guided";
-			break;
-		case omp_sched_monotonic:
-			cout << "monotonic";
-			break;
-	}
-	cout << " with chunk size: " << chunk_size << endl;
+	cout << "Schedule: static" << endl;
+	cout << "Chunk size: " << chunk_size << endl;
 
 	return 0;
 }

@@ -4,14 +4,15 @@ CLIB = -fopenmp
 .PHONY = clean cleanbmp
 
 SRC_DIR := ./src
+TARGET = tp6_static tp6_dynamic
 
+all: $(TARGET) 
 
-TARGET = tp6
+tp6_static: $(SRC_DIR)/static.cpp $(SRC_DIR)/writer.cpp
+	$(CC) $(CLIB) $(CFLAGS) $^ -o $@
 
-all: $(TARGET)
-
-$(TARGET): $(SRC_DIR)/main.cpp $(SRC_DIR)/writer.cpp
-	$(CC) $(CLIB) $(CFLAGS) $(wildcard $(SRC_DIR)/*.cpp) -o $@
+tp6_dynamic: $(SRC_DIR)/dynamic.cpp $(SRC_DIR)/writer.cpp
+	$(CC) $(CLIB) $(CFLAGS) $^ -o $@
 
 clean:
 	@rm -rf $(TARGET)

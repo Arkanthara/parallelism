@@ -1,0 +1,20 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/region_1.png>
+    Region 1
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/region_2.png>
+    Region 2
+end note
+
+@enduml
