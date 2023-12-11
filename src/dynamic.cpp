@@ -4,13 +4,17 @@
 #include <omp.h>
 #include <unistd.h>
 #include "writer.hpp"
+#include "global.hpp"
 
 using namespace std;
 using std::vector;
 using std::complex;
 
-
 int main(int argc, char * argv[]) {
+
+
+	// Get global variable chunk_size
+	extern const int chunk_size;
 
 	// Get the time
 	double start = omp_get_wtime();
@@ -25,8 +29,6 @@ int main(int argc, char * argv[]) {
 	br[1] = 0.35756;
 	vector<double> pFractal(1000*1000, 0);
 
-	int chunk_size = 1;
-	
 	// Define the number of iterations
 	int iterations = 256;
 
@@ -35,7 +37,7 @@ int main(int argc, char * argv[]) {
 	// Indicate we don't want that getopt print if the option is not known, because we want to have negative numbers as parameter
 	// and negative numbers are recognized as unknow option...
 	opterr = 0;
-	while ((option = getopt(argc, argv, "i:n:c:hd:s:")) != -1) {
+	while ((option = getopt(argc, argv, "i:n:c:h")) != -1) {
 		switch (option) {
 			case 'i':
 				iterations = atoi(optarg);
@@ -45,7 +47,6 @@ int main(int argc, char * argv[]) {
 					cout << "	-i [iterations]" << endl;
 					cout << "	-n [number of threads]" << endl;
 					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-					cout << "	-s [chunk_size]" << endl;
 					return -1;
 				}
 				break;
@@ -57,7 +58,6 @@ int main(int argc, char * argv[]) {
 					cout << "	-i [iterations]" << endl;
 					cout << "	-n [number of threads]" << endl;
 					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-					cout << "	-s [chunk_size]" << endl;
 					return -1;
 				}
 				omp_set_num_threads(nthreads);
@@ -69,7 +69,6 @@ int main(int argc, char * argv[]) {
 					cout << "	-i [iterations]" << endl;
 					cout << "	-n [number of threads]" << endl;
 					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-					cout << "	-s [chunk_size]" << endl;
 					return -1;
 				}
 				tl[0] = stod(argv[optind - 1]);
@@ -82,19 +81,14 @@ int main(int argc, char * argv[]) {
 					cout << "	-i [iterations]" << endl;
 					cout << "	-n [number of threads]" << endl;
 					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-					cout << "	-s [chunk_size]" << endl;
 					return -1;
 				}
-				break;
-			case 's':
-				chunk_size = atoi(optarg);
 				break;
 			case 'h':
 				cout << "Usage: " << argv[0] << endl;
 				cout << "	-i [iterations]" << endl;
 				cout << "	-n [number of threads]" << endl;
 				cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-				cout << "	-s [chunk_size]" << endl;
 				return -1;
 		}
 	}
@@ -104,13 +98,13 @@ int main(int argc, char * argv[]) {
 	double y_scale = (br[1] - tl[1]) / 1000.;
 
 	// Calculate our fractal. Collapse is used to merge the two for loop.
-	#pragma omp parallel
+	#pragma omp parallel 
 	{
 		// Get number of threads
 		nthreads = omp_get_num_threads();
 
 		// Merge two for loop into a big for loop and divide work between all active threads
-		#pragma omp for schedule(dynamic, chunk_size) collapse(2)
+		#pragma omp for collapse(2) schedule(dynamic, chunk_size)
 		for (int y = 0; y < 1000; y++) {
 			for (int x = 0; x < 1000; x++) {
 				complex<double> c(x * x_scale + tl[0], y * y_scale + tl[1]);

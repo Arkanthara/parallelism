@@ -8,10 +8,10 @@ TARGET = tp6_static tp6_dynamic
 
 all: $(TARGET) 
 
-tp6_static: $(SRC_DIR)/static.cpp $(SRC_DIR)/writer.cpp
+tp6_static: $(SRC_DIR)/static.cpp $(SRC_DIR)/writer.cpp $(SRC_DIR)/global.hpp
 	$(CC) $(CLIB) $(CFLAGS) $^ -o $@
 
-tp6_dynamic: $(SRC_DIR)/dynamic.cpp $(SRC_DIR)/writer.cpp
+tp6_dynamic: $(SRC_DIR)/dynamic.cpp $(SRC_DIR)/writer.cpp $(SRC_DIR)/global.hpp
 	$(CC) $(CLIB) $(CFLAGS) $^ -o $@
 
 clean:
