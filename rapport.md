@@ -27,23 +27,25 @@ Voici la structure de mon code:
 ```shell
 ├── graph.py
 ├── Makefile
-├── rapport.md
 ├── rapport.pdf
 ├── run.sh
 └── src
     ├── dynamic.cpp
+    ├── global.hpp
     ├── static.cpp
     ├── writer.cpp
     └── writer.hpp
-
 ```
 
 Il y a un code qui permet de faire uniquement de l'ordonnancement statique (car cela se fait à la compilation) et un autre code qui permet de faire uniquement de l'ordonnancement dynamique (qui se fait à l'exécution).
 
+J'ai défini la granularité de l'ordonnanceur dans le header `global.hpp`. C'est une variable constante afin que le compilateur puisse faire des optimisations.
+
 Lorsque l'on compile le code, on a tp6 qui est notre exécutable, et le résultat de notre fractal est enregistré dans un fichier `.bmp`, qui possède dans son nom le nombre d'itérations utilisé.
 J'ai réutilisé le writer.cpp du travail pratique 3 afin de créer le fichier `.bmp` pour visualiser le résultat obtenu.
 
-Mon code est presque le même que le code rendu au travail pratique précédent. C'est pourquoi, je vais uniquement expliquer les changements, et les grandes parties de mon code.
+Mon code est presque le même que le code rendu au travail pratique précédent, dupliqué en 2 fichiers permettant une exécution avec ordonnanceur statique (`static.cpp`), et une exécution avec ordonnanceur dynamique (`dynamic.cpp`).
+C'est pourquoi, je vais uniquement expliquer les changements, et les grandes parties de mon code.
 
 Mon code est divisible en 3 parties. Une première partie permettant de gérer les options données par l'utilisateur, une seconde partie permettant de calculer l'ensemble de Mandelbrot en section parallèle, et une dernière partie consistant à enregistrer dans un fichier `.bmp` les résultats obtenus, et à afficher le temps d'exécution, et d'autres informations, comme le nombre de threads utilisé, le type d'ordonnanceur utilisé...
 
@@ -59,12 +61,6 @@ On peut donner comme option les coordonnées du `top left` (`tl`) et du `bottom 
 ```bash
 ./tp6 -c -1 -1 1 1
 ```
-On peut donner comme option le type d'ordonnanceur et la taille d'une section du travail donné aux threads.
-Si on veut un ordonnanceur statique, on donne `-s`, sinon, on donne `-d` pour un ordonnanceur dynamique.
-```bash
-./tp6 -s 2 # For static shedule
-./tp6 -d 2 # For dynamic shedule
-```
 Enfin, on peut afficher une aide:
 ```bash
 ./tp6 -h
@@ -72,48 +68,30 @@ Usage: ./tp6
 	-i [iterations]
 	-n [number of threads]
 	-c [tl_x tl_y br_x br_y]
-	-s [chunk_size] (for static schedule)
-	-d [chunk_size] (for dynamic schedule)
 ```
 
 Si on donne aucun paramètre, le nombre d'itérations par défaut est 256, et la vue par défaut de notre fractal est `tl(0.3475, 0.3475)` et `br(0.36, 0.36)`.
-Le nombre par défaut de thread est donné par notre machine. L'ordonnanceur par défaut est dynamique et possède une granularité `chunk_size` de taille 1.
+Le nombre par défaut de thread est donné par notre machine. La granularité de l'ordonnanceur est donnée dans le fichier `global.hpp`
 
 On peut combiner les paramètres entre eux... Voici le résultat de cette exécution:
 ```bash
-./tp6 -c -1 -1 1 1 -n 16 -i 256 -s 2
+./tp6_static -n 4 -i 100
 
-Execution time: 3.63209
-Number of threads: 16
-Number of iterations: 256
-Schedule: static with chunk size: 2
+Execution time: 2.25746
+Number of threads: 4
+Number of iterations: 100
+Schedule: static
+Chunk size: 4
 ```
 
-Pour m'occuper de l'ordonnanceur, j'ai défini deux variables:
+Voici comment l'ordonnanceur est traité:
 ```C++
-int chunk_size;
-omp_sched_t sched_type;
+#pragma omp for collapse(2) schedule(static, chunk_size)
 ```
 
-`sched_type` donne le type d'ordonnanceur, et `chunk_size` spécifie le nombre d'itérations composant un bloc. L'ordonnanceur va diviser les blocs entre les threads actifs en section parallèle, qui comprendront le nombre d'itérations donné par `chunk_size`. `chunk_size` donne donc la granularité de l'ordonnancement.
+Ici, j'indique que je désire avoir un ordonnanceur statique, avec une granularité donnée par `chunk_size`, définie dans `global.hpp`.
 
-Pour mettre à jour l'ordonnanceur du programme en cours d'exécution, j'utilise la primitive openmp `omp_set_schedule` prenant en paramètre le type d'ordonnanceur, et la granularité de l'ordonnanceur. Cela donne concrêtement pour initialiser un ordonnanceur statique:
-```C++
-sched_type = omp_sched_static;  // Initialize schedule type
-chunk_size = atoi(optarg);      // Give the granularity of the schedule
-
-// Set the schedule with specific informations given
-omp_set_schedule(sched_type, chunk_size);
-```
-
-Ensuite, afin de récupérer les informations concernant l'ordonnanceur, j'utilise la primitive `omp_get_schedule` en section parallèle afin de recueillir le type d'ordonnanceur utilisé dans la variable `omp_sched_type` et la granularité de l'ordonnanceur dans la variable `chunk_size`.
-Ce qui nous donne le code suivant:
-```C++
-// Get schedule informations
-omp_get_schedule(&sched_type, &chunk_size);
-```
-
-Et à la fin de mon code j'affiche également les informations concernant l'ordonnanceur.
+À la fin de mon code j'affiche également les informations concernant l'ordonnanceur.
 
 
 # Résultats
@@ -148,6 +126,24 @@ end note
 
 @enduml
 ```
+
+Et voici les résultats obtenus pour des exécutions avec 14 threads sur baobab, car un noeud possède 14 cpu dans baobab:
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/graph.png>
+end note
+@enduml
+```
+
 # Discussion
 
 Afin de pouvoir discuter plus facilement du comportement et des performances du programme, j'ai calculé un speed up ampirique, permettant de déterminer l'efficacité de la parallélisation, que j'ai défini de la sorte:

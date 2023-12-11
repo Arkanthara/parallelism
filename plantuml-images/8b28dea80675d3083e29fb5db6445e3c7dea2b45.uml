@@ -1,0 +1,13 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/graph.png>
+end note
+@enduml

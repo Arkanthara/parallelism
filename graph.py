@@ -66,10 +66,10 @@ region_2 = np.array([
 chunk_size = [2**i for i in range(14)]
 
 plt.figure()
-plt.plot(chunk_size, region_1[::2], label='region_1 static schedule', color='r')
-plt.plot(chunk_size, region_1[1::2], label='region_1 dynamic schedule', color='g')
-plt.plot(chunk_size, region_2[::2], label='region_2 static schedule', color='r')
-plt.plot(chunk_size, region_2[1::2], label='region_2 dynamic schedule', color='g')
+plt.plot(chunk_size, region_1[::2], label='region_1 static schedule')
+plt.plot(chunk_size, region_1[1::2], label='region_1 dynamic schedule')
+plt.plot(chunk_size, region_2[::2], label='region_2 static schedule')
+plt.plot(chunk_size, region_2[1::2], label='region_2 dynamic schedule')
 plt.xlabel("Chunk size")
 plt.ylabel("Time execution")
 plt.legend()
