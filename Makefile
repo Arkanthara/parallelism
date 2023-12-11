@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -g -Wall
 CLIB = -fopenmp
-.PHONY = clean cleanbmp
+.PHONY = clean cleanbmp cleanall
 
 SRC_DIR := ./src
 TARGET = tp6_static tp6_dynamic
@@ -19,3 +19,6 @@ clean:
 
 cleanbmp:
 	@rm T_*
+
+cleanall:
+	@rm -rf ./err ./out $(TARGET) T_*
