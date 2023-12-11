@@ -75,14 +75,6 @@ int main(int argc, char * argv[]) {
 				tl[1] = stod(argv[optind]);
 				br[0] = stod(argv[optind + 1]);
 				br[1] = stod(argv[optind + 2]);
-				if (tl[0] >= br[0] || tl[1] >= br[1]) {
-					cerr << "Error ! bad coordinate values ! Coordinate of top left (tl) must be less than bottom right (br) coordinates"<< endl;
-					cout << "Usage: " << argv[0] << endl;
-					cout << "	-i [iterations]" << endl;
-					cout << "	-n [number of threads]" << endl;
-					cout << "	-c [tl_x tl_y br_x br_y]" << endl;
-					return -1;
-				}
 				break;
 			case 'h':
 				cout << "Usage: " << argv[0] << endl;
