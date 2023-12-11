@@ -146,11 +146,6 @@ end note
 
 # Discussion
 
-Afin de pouvoir discuter plus facilement du comportement et des performances du programme, j'ai calculé un speed up ampirique, permettant de déterminer l'efficacité de la parallélisation, que j'ai défini de la sorte:
-$$S = \frac{T_{seq}}{T_{par}} \approx \frac{\text{Time execution with one thread}}{\text{Time execution (with one or more threads)}}$$
-Cela me donne le graphique suivant:
-
-Nous pouvons observer des choses intéressantes grâce aux deux graphiques.
 
 
 # Conclusion
