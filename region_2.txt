@@ -1,0 +1,182 @@
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.394522
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 1
+Execution time: 0.452613
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 1
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.407947
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 2
+Execution time: 0.416857
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 2
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.556707
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 4
+Execution time: 0.440989
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 4
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.410292
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 8
+Execution time: 0.432819
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 8
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.39752
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 16
+Execution time: 0.421749
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 16
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.39078
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 32
+Execution time: 0.43319
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 32
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.391721
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 64
+Execution time: 0.443573
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 64
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.401217
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 128
+Execution time: 0.449566
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 128
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.389355
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 256
+Execution time: 0.420713
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 256
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.39951
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 512
+Execution time: 0.423068
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 512
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.399521
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 1024
+Execution time: 0.574281
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 1024
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.394868
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 2048
+Execution time: 0.405525
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 2048
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.651942
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 4096
+Execution time: 0.427185
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 4096
+cpu001
+g++ -fopenmp -g -Wall src/static.cpp src/writer.cpp src/global.hpp -o tp6_static
+g++ -fopenmp -g -Wall src/dynamic.cpp src/writer.cpp src/global.hpp -o tp6_dynamic
+Execution time: 0.450496
+Number of threads: 14
+Number of iterations: 256
+Schedule: static
+Chunk size: 8192
+Execution time: 0.438987
+Number of threads: 14
+Number of iterations: 256
+Schedule: dynamic
+Chunk size: 8192
