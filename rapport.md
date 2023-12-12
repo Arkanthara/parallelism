@@ -103,7 +103,9 @@ La première région est donnée par `tl(0.3602, 0.35656)` et `br(0.3612, 0.3575
 La deuxième région est donnée par `tl(0.3, 0.3)` et `br(0.5, 0.5)`. Je l'ai choisie car le nombre d'itérations n'est pas très bien réparti.
 En effet, on peut constater en regardant l'image que à gauche, on a un grand nombre d'itérations, et à droite de l'image, on a un faible nombre d'itérations...
 
-Voici les deux régions que j'ai choisi pour exécuter mon code:
+Et la troisième région est donnée par `tl(-2, -2)` et `br(2, 2)`. Il s'agit de la vue d'ensemble de l'ensemble de Mandelbrot.
+
+Voici les trois régions que j'ai choisi pour exécuter mon code:
 ```plantuml
 @startuml
 
@@ -122,6 +124,11 @@ end note
 note as img_2
     <img:/home/darcy/Documents/parallelism/images/region_2.png>
     Region 2
+end note
+
+note as img_3
+    <img:/home/darcy/Documents/parallelism/images/region_3.png>
+    Region 3
 end note
 
 @enduml
@@ -146,7 +153,26 @@ end note
 
 # Discussion
 
+Tout d'abord, commençons par expliquer ce qu'est un ordonnanceur statique, un ordonnanceur dynamique, et quelles sont les principales différences et avantages des deux.
 
+Un ordonnanceur permet de diviser une boucle en bloc d'itérations et de les répartir entre tous les threads actifs.
+Un ordonnanceur statique attribue les blocs d'itération avant la compilation.
+Le `chunk_size` est le nombre d'itérations par bloc, donné en travail aux threads.
+Comme les blocs d'itérations sont attribués avant la compilation, le compilateur ne sait pas forcément quelle est la quantité de travail pour chaque itérations et ne considère pas qu'un bloc d'itération puisse représenter plus de travail qu'un autre bloc d'itération.
+Le compilateur agence donc les blocs d'itération sans tenir compte de la quantité de travail de chaque bloc.
+Ce qui est un soucis si on a un calcul mal réparti, on va avoir des threads qui seront inactifs, car ils auront fini le travail qui leur aura été attribué pendant que d'autres threads seront en train de travailler, et pendant que le programme attend que les threads qui travaillent finissent de travailler pour continuer à donner le travail dans l'ordre déterminé par le compilateur.
+Donc un ordonnanceur statique est très utile si le travail de chaque bloc est constant, car il va optimiser à la compilation la répartition des blocs (en général, il va suivre un procédé de Round-Robin car il considère que chaque bloc va prendre le même temps.... A reformuler...).
+Cependant, si le travail est mal réparti, l'ordonnanceur statique n'est pas idéal, car comme tout est défini à la compilation, des threads vont avoir pas beaucoup de travail et être inactif pendant que d'autres threads travaillent, ce qui augmente l'overhead et diminue les performances...
+
+Un ordonnanceur dynamique attribue les blocs d'itérations au moment de l'exécution du programme.
+L'ordonnanceur dynamique peut donc donner directement le bloc suivant à un thread ayant fini son bloc avant les autres, si ce bloc n'a pas de dépendance avec un autre bloc en cours d'exécution.
+Ainsi, si on a un travail mal réparti, l'ordonnanceur dynamique va minimiser l'overhead en essayant de toujours donner des blocs aux threads ayant fini leur travail.
+
+Donc l'ordonnanceur statique est, en théorie, censé donner de meilleurs résultats pour des blocs ayant tous la même charge de travail, et l'ordonnanceur dynamique est censé donner de meilleurs résultats si les blocs ont des charges de travail très différentes.
+
+Nous allons voir si ce que nous supposons va se passer avec l'ordonnanceur statique et l'ordonnanceur dynamique.
+
+Voici les résultats que j'ai obtenus:
 
 # Conclusion
 

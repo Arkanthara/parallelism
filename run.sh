@@ -4,7 +4,6 @@
 #SBATCH --error ./err/Michel_TP6-err.e%j	# Errors will be written here
 #SBATCH --nodes 1				# Number of nodes used (on baobab, a node allow to use 14 cores)
 #SBATCH --ntasks 1				# Number of tasks in our job
-#SBATCH --cpus-per-task 14			# Number of cpus per tasks
 #SBATCH --partition debug-cpu			# Partition to use
 #SBATCH --time 15:00				# Maximum time execution
 
@@ -28,5 +27,14 @@ fi
 export OMP_NUM_THREADS=$omp_threads
 
 # Run program
+echo "Region 1"
 ./tp6_static
 ./tp6_dynamic
+
+echo "Region 2"
+./tp6_static -c 0.3 0.3 0.5 0.5
+./tp6_dynamic -c 0.3 0.3 0.5 0.5
+
+echo "Region 3"
+./tp6_static -c -2 -2 2 2
+./tp6_dynamic -c -2 -2 2 2
