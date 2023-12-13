@@ -13,9 +13,6 @@ module load CUDA
 
 echo $SLURM_NODELIST
 
-# Compile program
-make
-
 # Set OMP_NUM_THREADS to the same value as --cpus-per-task
 # with a fallback in case it isn't set.
 # SLURM_CPUS_PER_TASK is set to the value of --cpus-per-task, but only if --cpus-per-task is explicitly set
@@ -27,27 +24,26 @@ make
 # export OMP_NUM_THREADS=$omp_threads
 
 if [ -n "$1" ]; then
-	ITERATION = $1
+	ITERATIONS = $1
 else
-	ITERATION = 100
+	ITERATIONS = 100
 fi
 
 # Run program
 for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 1024, 2048]; do
 	for j in [1, 2, 4, 8, 16, 32, 64]; do
-		make cleanall
 		make define_chunk_size CHUNK_SIZE=$(i)
 		make
 		echo "Region 1"
-		./tp6_static -i 1024 -n $(i)
-		./tp6_dynamic -i 1024 -n $(i)
+		./tp6_static -i $(ITERATIONS) -n $(i)
+		./tp6_dynamic -i $(ITERATIONS) -n $(i)
 		
 		echo "Region 2"
-		./tp6_static -c 0.3 0.3 0.5 0.5 -i 1024 -n $(i)
-		./tp6_dynamic -c 0.3 0.3 0.5 0.5 -i 1024 -n $(i)
+		./tp6_static -c 0.3 0.3 0.5 0.5 -i $(ITERATIONS) -n $(i)
+		./tp6_dynamic -c 0.3 0.3 0.5 0.5 -i $(ITERATIONS) -n $(i)
 		
 		echo "Region 3"
-		./tp6_static -c -2 -2 2 2 -i 1024 -n $(i)
-		./tp6_dynamic -c -2 -2 2 2 -i 1024 -n $(i)
+		./tp6_static -c -2 -2 2 2 -i $(ITERATIONS) -n $(i)
+		./tp6_dynamic -c -2 -2 2 2 -i $(ITERATIONS) -n $(i)
 	done
 done
