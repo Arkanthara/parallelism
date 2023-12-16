@@ -5,7 +5,7 @@
 #SBATCH --ntasks 1				# Number of tasks in our job
 #SBATCH --cpus-per-task 32
 #SBATCH --partition shared-cpu			# Partition to use
-#SBATCH --time 30:00				# Maximum time execution
+#SBATCH --time 60:00				# Maximum time execution
 
 # Load modules for compiling and run program
 module load foss
@@ -30,9 +30,12 @@ echo $SLURM_NODELIST
 # fi
 
 # Run program
-for k in 64 128 256 512 1024; do
+# Number of iterations
+for k in 128 256 512 1024; do
+	# Chunk size
 	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048; do
-		for j in 1 2 4 8 16 32 64 128; do
+		# Thread number
+		for j in 8 16 32 64 128; do
 			make define_chunk_size CHUNK_SIZE=$i
 			make
 			echo "Region 1"
