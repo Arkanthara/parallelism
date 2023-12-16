@@ -1,22 +1,30 @@
-CC = mpic++
+CC = g++
 CFLAGS = -g -Wall -c
-OBJS = grid.o writer.o
+OBJS = writer.o
+CLIBS = -ltbb -std=c++17
 .PHONY = clean cleanbmp
 
-tp3: main.cpp $(OBJS)
-	$(CC) $(OBJS) main.cpp -o tp3
+TARGET = tp7
 
-grid.o: grid.cpp
-	$(CC) $(CFLAGS) grid.cpp -o grid.o
+SRC_DIR = ./src
+BUILD_DIR = $(shell if [ ! -d "./build" ]; then mkdir build; echo build; else echo build; fi;)
 
-writer.o: writer.cpp
-	$(CC) $(CFLAGS) writer.cpp -o writer.o
+all: $(TARGET)
+
+$(TARGET): $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
+	$(CC) $^ -o $@ $(CLIBS) 
+
+$(BUILD_DIR)/writer.o: $(SRC_DIR)/writer.cpp
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(OBJS) tp3
+	@rm -rf ./build $(TARGET)
 
 cleanbmp:
-	rm T_*
+	@rm T_*
 
 cleanoutput:
-	rm ./err/* ./out/*
+	@rm ./err/* ./out/*
+
+cleanall:
+	@rm -rf T_* ./err ./out ./build $(TARGET)

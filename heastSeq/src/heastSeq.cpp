@@ -10,11 +10,11 @@ using std::vector;
 
 // Inline is usefull to copy the function because if we have a foreach and a lambda function that call this function, this function is on stack, so to have the function defined on the device, the inline indicate that the function must be copied on the device...
 int inline i2x(int index, int size) {
-	return index / size;
+	return index % size;
 }
 
 int inline i2y(int index, int size) {
-	return index % size;
+	return index / size;
 }
 
 int inline xy2i(int x, int y, int size) {
@@ -75,9 +75,7 @@ int main(int argc, char * argv[]) {
 
 	vector<double> grid_2 (size * size, 0.);
 
-	print_grid(create_grid(8), 8);
-
-	int start = grid.data();
+	vector<double> grid = create_grid(size);
 
 	auto hx = 1./size;
 	auto hy = 1./size;
@@ -95,8 +93,8 @@ int main(int argc, char * argv[]) {
 	for(int iT = 0; iT < max_iter;iT++)
 	{
 		for_each(std::execution::par, grid_2.begin(), grid_2.end(),
-			[start = grid_2.data(), size, grid](double& item) {
-				index = item - start;
+			[start = grid_2.data(), size, grid, diagx, diagy, weightx, weighty](double& item) {
+				int index = &item - start;
 				int x = i2x(index, size);
 				int y = i2y(index, size);
 				if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
@@ -104,10 +102,10 @@ int main(int argc, char * argv[]) {
 				else
 					item = weightx*(grid[xy2i(x-1, y, size)]
 					+ grid[xy2i(x+1, y, size)]
-					+ grid[xy2i(x, y, size)]*dxagx)
-					+ wexghty*(grid[xy2i(x, y-1, size)]
+					+ grid[xy2i(x, y, size)]*diagx)
+					+ weighty*(grid[xy2i(x, y-1, size)]
 					+ grid[xy2i(x, y+1, size)]
-					+ grid[xy2i(x, y, size)]*dxagy)
+					+ grid[xy2i(x, y, size)]*diagy);
 			});
 		swap(grid_2, grid);
 		/*
