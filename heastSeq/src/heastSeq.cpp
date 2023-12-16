@@ -1,8 +1,9 @@
 #include <iostream>
-//#include <execution>
+#include <execution>
 #include <algorithm>
 #include <unistd.h>
 #include <vector>
+#include "writer.hpp"
 
 using namespace std;
 using std::vector;
@@ -16,13 +17,17 @@ int inline i2y(int index, int size) {
 	return index % size;
 }
 
+int inline xy2i(int x, int y, int size) {
+	return x * size + y;
+}
+
 
 int main(int argc, char * argv[]) {
 
-	int iter = 100;
+	int max_iter = 100;
 	int size = 128;
 	int option;
-	while((option = getopt(argc, argv, "s:t:")) != -1) {
+	while((option = getopt(argc, argv, "s:i:")) != -1) {
 		switch (option) {
 			case 's':
 				size = atoi(optarg);
@@ -30,9 +35,9 @@ int main(int argc, char * argv[]) {
 					cerr << "Error" << endl;
 				}
 				break;
-			case 't':
-				iter = atoi(optarg);
-				if (iter == 0) {
+			case 'i':
+				max_iter = atoi(optarg);
+				if (max_iter == 0) {
 					cerr << "Error" << endl;
 				}
 				break;
@@ -68,8 +73,50 @@ int main(int argc, char * argv[]) {
 		}
 	};
 
+	vector<double> grid_2 (size * size, 0.);
+
 	print_grid(create_grid(8), 8);
 
+	int start = grid.data();
 
+	auto hx = 1./size;
+	auto hy = 1./size;
+	
+	auto C = 1.;
+	
+	auto dt = 0.25*hx*hx/C;
+	
+	auto diagx = -2.0 + hx*hx/(2*C*dt);
+	auto diagy = -2.0 + hy*hy/(2*C*dt);
+	auto weightx = C*dt/(hx*hx);
+	auto weighty = C*dt/(hy*hy);
+
+	//FILL
+	for(int iT = 0; iT < max_iter;iT++)
+	{
+		for_each(std::execution::par, grid_2.begin(), grid_2.end(),
+			[start = grid_2.data(), size, grid](double& item) {
+				index = item - start;
+				int x = i2x(index, size);
+				int y = i2y(index, size);
+				if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
+					item = grid[index];
+				else
+					item = weightx*(grid[xy2i(x-1, y, size)]
+					+ grid[xy2i(x+1, y, size)]
+					+ grid[xy2i(x, y, size)]*dxagx)
+					+ wexghty*(grid[xy2i(x, y-1, size)]
+					+ grid[xy2i(x, y+1, size)]
+					+ grid[xy2i(x, y, size)]*dxagy)
+			});
+		swap(grid_2, grid);
+		/*
+		for (int i = 1; i < size - 1; i++)
+			for (int j = 1; j < size-1; j++)
+				U[i][j] = weightx*(U0[i-1][j] + U0[i+1][j] + U0[i][j]*diagx) + weighty*(U0[i][j-1] + U0[i][j+1] + U0[i][j]*diagy);
+		swap(U,U0);
+		*/
+	}
+	write_to_bmp(size, grid, max_iter, 0, 1);
 }
 

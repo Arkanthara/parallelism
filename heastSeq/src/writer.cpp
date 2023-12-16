@@ -7,7 +7,7 @@
 using namespace std;
 
 // Write the data to an image in the raw BMP format.
-void write_to_bmp(int N, std::vector<std::vector<double>>& data, int iter, double minval, double maxval)
+void write_to_bmp(int N, std::vector<double>& data, int iter, double minval, double maxval)
 {
     unsigned char bmpfileheader[14] = {'B','M',0,0,0,0,0,0,0,0,54,0,0,0};
     unsigned char bmpinfoheader[40] = { 40, 0,  0, 0,
@@ -34,7 +34,7 @@ void write_to_bmp(int N, std::vector<std::vector<double>>& data, int iter, doubl
     for(int iX = 0; iX < width; iX++){
         for(int iY = 0; iY < height; iY++){
             // Restrain the value to be plotted to [0, 1]
-            double value = ((data[iY][iX] - minval) / (maxval - minval));
+            double value = ((data[iY * N + iX] - minval) / (maxval - minval));
             double r = 0., g = 0., b = 0.;
             // For good visibility, use a color scheme that goes from black-blue to black-red.
             if (value <= 1./8.) {
