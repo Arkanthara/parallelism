@@ -13,22 +13,6 @@ module load CUDA
 
 echo $SLURM_NODELIST
 
-# Set OMP_NUM_THREADS to the same value as --cpus-per-task
-# with a fallback in case it isn't set.
-# SLURM_CPUS_PER_TASK is set to the value of --cpus-per-task, but only if --cpus-per-task is explicitly set
-# if [ -n "$SLURM_CPUS_PER_TASK" ]; then
-#   omp_threads=$SLURM_CPUS_PER_TASK
-# else
-#   omp_threads=1
-# fi
-# export OMP_NUM_THREADS=$omp_threads
-
-# iter=100
-# 
-# if [ -n "$1" ]; then
-# 	iter=$1
-# fi
-
 
 # Vary number of threads for a number of iterations fixed to 1024
 # Thread number

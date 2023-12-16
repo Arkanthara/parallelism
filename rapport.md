@@ -25,7 +25,6 @@ Voici la structure de mon code:
 
 
 ```shell
-├── graph.py
 ├── Makefile
 ├── rapport.pdf
 ├── run.sh
@@ -213,7 +212,7 @@ Le `chunk_size` est le nombre d'itérations par bloc, donné en travail aux thre
 Comme les blocs d'itérations sont attribués avant la compilation, le compilateur ne sait pas forcément quelle est la quantité de travail pour chaque itérations et ne considère pas qu'un bloc d'itération puisse représenter plus de travail qu'un autre bloc d'itération.
 Le compilateur agence donc les blocs d'itération sans tenir compte de la quantité de travail de chaque bloc.
 Ce qui est un soucis si on a un calcul mal réparti, on va avoir des threads qui seront inactifs, car ils auront fini le travail qui leur aura été attribué pendant que d'autres threads seront en train de travailler, et pendant que le programme attend que les threads qui travaillent finissent de travailler pour continuer à donner le travail dans l'ordre déterminé par le compilateur.
-Donc un ordonnanceur statique est très utile si le travail de chaque bloc est constant, car il va optimiser à la compilation la répartition des blocs (en général, il va suivre un procédé de Round-Robin car il considère que chaque bloc va prendre le même temps.... A reformuler...).
+Donc un ordonnanceur statique est très utile si le travail de chaque bloc est constant, car il va optimiser à la compilation la répartition des blocs.
 Cependant, si le travail est mal réparti, l'ordonnanceur statique n'est pas idéal, car comme tout est défini à la compilation, des threads vont avoir pas beaucoup de travail et être inactif pendant que d'autres threads travaillent, ce qui augmente l'overhead et diminue les performances...
 
 Un ordonnanceur dynamique attribue les blocs d'itérations au moment de l'exécution du programme.
@@ -222,20 +221,52 @@ Ainsi, si on a un travail mal réparti, l'ordonnanceur dynamique va minimiser l'
 
 Donc l'ordonnanceur statique est, en théorie, censé donner de meilleurs résultats pour des blocs ayant tous la même charge de travail, et l'ordonnanceur dynamique est censé donner de meilleurs résultats si les blocs ont des charges de travail très différentes.
 
-En observant les résultats obtenus, on peut remarquer que effectivement, l'ordonnanceur statique est plus lent que l'ordonnanceur dynamique sur les régions 2 et 3, mais sur la région 1, on n'a pas de grande différence entre ordonnanceur statique et dynamique...
+En observant les résultats obtenus, on peut remarquer que les temps d'exécutions obtenus avec ordonnanceur statique et dynamique varient beaucoup.
+En effet, on n'a pas de graphique faisant une jolie courbe...
+On peut également remarquer que effectivement, l'ordonnanceur statique est plus lent que l'ordonnanceur dynamique sur les régions 2 et 3, ce qui est ce à quoi on s'attendait, mais sur la région 1, on n'a pas de grande différence entre ordonnanceur statique et dynamique...
 
-On peut également remarquer que les temps d'exécutions obtenus avec ordonnanceur statique et dynamique sont très proche et inconstant.
-En effet, lorsque l'on fait varier le chunk size, les temps d'exécutions varient beaucoup...
-Peut-être que prendre un problème avec un travail constant par bloc nous permettrait de voir effectivement une différence notable entre ordonnanceur statique et dynamique, car les résultats nous laissent simplement penser que l'ordonnanceur dynamique est équivalent, voire meilleur que l'ordonnanceur statique pour l'ensemble de Mandelbrot...
+Peut-être que prendre un problème avec un travail constant par bloc nous permettrait de voir effectivement une différence notable entre ordonnanceur statique et dynamique, car les résultats nous laissent simplement penser que l'ordonnanceur dynamique est équivalent, voire meilleur que l'ordonnanceur statique pour l'ensemble de Mandelbrot, c'est pourquoi, je suppose que la région que j'avais choisie n'avait pas un travail constant à exécuter par bloc.
 
-Comme je ne vois pas trop de différence, j'ai décidé de choisir une région à l'intérieur de l'ensemble de Mandelbrot et de calculer les différences entre ordonnanceur statique et dynamique, car on devrait avoir une différence plus notable, étant donné que la charge de travail est censé être constante par blocs.
+J'ai donc décidé de choisir une région à l'intérieur de l'ensemble de Mandelbrot et de calculer les différences entre ordonnanceur statique et dynamique, car on devrait avoir une différence plus notable, étant donné que la charge de travail est censée être constante par blocs.
 J'ai donc fixé le nombre d'itérations à 1024 pour avoir suffisamment de travail par blocs.
+La région que j'ai choisie est donc entièrement dans l'ensemble de Mandelbrot, avec `tl(0, 0)` et `br(0.25, 0.25)`.
 
 Voici les résultats que j'ai obtenu pour cette dernière région choisie:
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/last_graph.png>
+end note
+
+@enduml
+```
+
+On peut alors remarquer que l'ordonnanceur statique possède toujours à peu près le même temps d'exécution que l'ordonnanceur dynamique.
+
+On peut également remarquer que le temps d'exécution ne varie pas tellement pour une granularité augmentant jusqu'à un certain seuil.
+Après ce seuil, le temps d'exécution augmente, car comme la granularité est trop grosse, il y a un overhead plus grand car le travail ne peut plus être bien divisé entre les threads actifs car la granularité est trop grosse.
+
+Enfin, on peut observer que pour 64 threads, l'ordonnanceur statique est moins bon que l'ordonnanceur dynamique.
+Cela est peut-être causé par le fait que j'ai utilisé un nombre de threads plus élevé que le nombre de cpus, ce qui fait que l'ordonnanceur statique qui avait planifié sa répartition du travail entre les threads en pensant avoir 64 cpus à disposition se retrouve perturbé par le fait que seulement 32 cpus sont utilisés.
+
+Donc un ordonnanceur statique est au mieux aussi bon qu'un ordonnanceur dynamique pour ce problème de l'ensemble de Mandelbrot.
+
 # Conclusion
+
+En regardant les différences entre les ordonnanceurs et leurs granularité, on a pu remarquer qu'il faut trouver la bonne granularité pour chaque ordonnanceur, car, par exemple, une granularité trop grosse diminue les performances.
+On a pu également voir que pour l'ensemble de Mandelbrot, un ordonnanceur statique est au mieux aussi bon qu'un ordonnanceur dynamique.
+Et la principale différence entre ordonnanceur statique et dynamique est que l'un attribue les tâches à faire à la compilation, et l'autre à l'exécution.
+Ce qui signifie que l'ordonnanceur dynamique est plus flexible, car il attribue le travail en fonction des disponibilités des ressources lors de l'exécution.
 
 Pour conclure, pour chaque problème donné, on a plusieurs défis à relever.
 Tout d'abord, on doit essayer de paralléliser le plus possible le code.
 Ensuite, lorsque le code est parallélisé, on doit trouver le nombre de threads maximisant l'efficacité de la parallélisation.
-
-Il faut donc trouver le juste équilibre pour chaque programme entre nombre de threads utilisé et gain de performance.
+Enfin, on doit trouver quel type d'ordonnanceur et quelle granularité utiliser pour maximiser les performances

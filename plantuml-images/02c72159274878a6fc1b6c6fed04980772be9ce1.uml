@@ -8,6 +8,7 @@ note {
 </style>
 
 note as img_1
-    <img:/home/darcy/Documents/parallelism/images/graph.png>
+    <img:/home/darcy/Documents/parallelism/images/last_graph.png>
 end note
+
 @enduml
