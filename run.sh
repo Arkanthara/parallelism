@@ -29,26 +29,45 @@ echo $SLURM_NODELIST
 # 	iter=$1
 # fi
 
-# Run program
+
+# Vary number of threads for a number of iterations fixed to 1024
+# Thread number
+for j in 8 16 32 64; do
+	# Chunk size
+	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048; do
+		make define_chunk_size CHUNK_SIZE=$i
+		make
+		echo "Region 1"
+		./tp6_static -i 1024 -n $j
+		./tp6_dynamic -i 1024 -n $j
+		
+		echo "Region 2"
+		./tp6_static -c 0.3 0.3 0.5 0.5 -i 1024 -n $j
+		./tp6_dynamic -c 0.3 0.3 0.5 0.5 -i 1024 -n $j
+		
+		echo "Region 3"
+		./tp6_static -c -2 -2 2 2 -i 1024 -n $j
+		./tp6_dynamic -c -2 -2 2 2 -i 1024 -n $j
+	done
+done
+
+# Vary number of iterations for a thread number fixed to 32
 # Number of iterations
 for k in 128 256 512 1024; do
 	# Chunk size
 	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048; do
-		# Thread number
-		for j in 8 16 32 64 128; do
-			make define_chunk_size CHUNK_SIZE=$i
-			make
-			echo "Region 1"
-			./tp6_static -i $k -n $j
-			./tp6_dynamic -i $k -n $j
-			
-			echo "Region 2"
-			./tp6_static -c 0.3 0.3 0.5 0.5 -i $k -n $j
-			./tp6_dynamic -c 0.3 0.3 0.5 0.5 -i $k -n $j
-			
-			echo "Region 3"
-			./tp6_static -c -2 -2 2 2 -i $k -n $j
-			./tp6_dynamic -c -2 -2 2 2 -i $k -n $j
-		done
+		make define_chunk_size CHUNK_SIZE=$i
+		make
+		echo "Region 1"
+		./tp6_static -i $k -n 32
+		./tp6_dynamic -i $k -n 32
+		
+		echo "Region 2"
+		./tp6_static -c 0.3 0.3 0.5 0.5 -i $k -n 32
+		./tp6_dynamic -c 0.3 0.3 0.5 0.5 -i $k -n 32
+		
+		echo "Region 3"
+		./tp6_static -c -2 -2 2 2 -i $k -n 32
+		./tp6_dynamic -c -2 -2 2 2 -i $k -n 32
 	done
 done
