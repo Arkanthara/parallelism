@@ -1,0 +1,19 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/threads_1.png>
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/threads_2.png>
+end note
+
+img_1 -[hidden]d-> img_2
+@enduml

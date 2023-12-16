@@ -134,7 +134,10 @@ end note
 @enduml
 ```
 
-Et voici les résultats obtenus pour des exécutions avec 14 threads sur baobab, car un noeud possède 14 cpu dans baobab:
+J'ai exécuté tout mon code avec seulement 32 cpus, donc j'ai fait varier le nombre de threads de 8 à 64 en puissance de 2.
+J'ai essayé des chunk size allant de 1 à 2048 (en puissance de 2), et un nombre d'itérations allant de 128 à 1024 (en puissance de 2).
+Les résultats que j'ai obtenus n'ont pas été très concluant...
+Voici les graphiques que j'ai fait en fixant soit le nombre de threads, soit le nombre d'itérations, soit le `chunk_size`:
 ```plantuml
 @startuml
 
@@ -146,10 +149,59 @@ note {
 </style>
 
 note as img_1
-    <img:/home/darcy/Documents/parallelism/images/graph.png>
+    <img:/home/darcy/Documents/parallelism/images/graph_1.png>
 end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/graph_2.png>
+end note
+
+img_1 -[hidden]d-> img_2
 @enduml
 ```
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/graph_3.png>
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/graph_5.png>
+end note
+
+img_1 -[hidden]d-> img_2
+@enduml
+```
+```plantuml
+@startuml
+
+<style>
+note {
+    backgroundcolor white
+    linecolor transparent
+}
+</style>
+
+note as img_1
+    <img:/home/darcy/Documents/parallelism/images/threads_1.png>
+end note
+
+note as img_2
+    <img:/home/darcy/Documents/parallelism/images/threads_2.png>
+end note
+
+img_1 -[hidden]d-> img_2
+@enduml
+```
+
 
 # Discussion
 
@@ -170,10 +222,16 @@ Ainsi, si on a un travail mal réparti, l'ordonnanceur dynamique va minimiser l'
 
 Donc l'ordonnanceur statique est, en théorie, censé donner de meilleurs résultats pour des blocs ayant tous la même charge de travail, et l'ordonnanceur dynamique est censé donner de meilleurs résultats si les blocs ont des charges de travail très différentes.
 
-Nous allons voir si ce que nous supposons va se passer avec l'ordonnanceur statique et l'ordonnanceur dynamique.
+En observant les résultats obtenus, on peut remarquer que effectivement, l'ordonnanceur statique est plus lent que l'ordonnanceur dynamique sur les régions 2 et 3, mais sur la région 1, on n'a pas de grande différence entre ordonnanceur statique et dynamique...
 
-Voici les résultats que j'ai obtenus:
+On peut également remarquer que les temps d'exécutions obtenus avec ordonnanceur statique et dynamique sont très proche et inconstant.
+En effet, lorsque l'on fait varier le chunk size, les temps d'exécutions varient beaucoup...
+Peut-être que prendre un problème avec un travail constant par bloc nous permettrait de voir effectivement une différence notable entre ordonnanceur statique et dynamique, car les résultats nous laissent simplement penser que l'ordonnanceur dynamique est équivalent, voire meilleur que l'ordonnanceur statique pour l'ensemble de Mandelbrot...
 
+Comme je ne vois pas trop de différence, j'ai décidé de choisir une région à l'intérieur de l'ensemble de Mandelbrot et de calculer les différences entre ordonnanceur statique et dynamique, car on devrait avoir une différence plus notable, étant donné que la charge de travail est censé être constante par blocs.
+J'ai donc fixé le nombre d'itérations à 1024 pour avoir suffisamment de travail par blocs.
+
+Voici les résultats que j'ai obtenu pour cette dernière région choisie:
 # Conclusion
 
 Pour conclure, pour chaque problème donné, on a plusieurs défis à relever.
