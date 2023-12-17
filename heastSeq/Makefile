@@ -1,7 +1,9 @@
-CC = g++
+CCPU = g++
+CGPU = nvc++
 CFLAGS = -g -Wall -c
 OBJS = writer.o
-CLIBS = -ltbb -std=c++17
+CLIBCPU = -ltbb -std=c++17
+CLIBGPU = -stdpar -std=c++17
 .PHONY = clean cleanbmp
 
 TARGET = tp7
@@ -11,11 +13,17 @@ BUILD_DIR = $(shell if [ ! -d "./build" ]; then mkdir build; echo build; else ec
 
 all: $(TARGET)
 
+cpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
+	$(CCPU) $^ -o $(TARGET) $(CLIBCPU)
+
+gpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
+	$(CGPU) $^ -o $(TARGET) $(CLIBGPU)
+
 $(TARGET): $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
-	$(CC) $^ -o $@ $(CLIBS) 
+	$(CCPU) $^ -o $@ $(CLIBCPU) 
 
 $(BUILD_DIR)/writer.o: $(SRC_DIR)/writer.cpp
-	$(CC) $(CFLAGS) $< -o $@
+	$(CCPU) $(CFLAGS) $< -o $@
 
 clean:
 	@rm -rf ./build $(TARGET)
