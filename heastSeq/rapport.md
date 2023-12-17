@@ -32,6 +32,20 @@ double value = ((data[iX][iY] - minval) / (maxval - minval));
 // After
 double value = ((data[iY * N + iX] - minval) / (maxval - minval));
 ```
+Je calcule le temps d'exécution de mon programme au moyen de la librairie C++ `chrono` de la manière suivante:
+```C++
+// Begin of the program
+// Get the time
+auto start_time = std::chrono::high_resolution_clock::now();
+...
+// End of the program
+// Get the time
+auto end_time = std::chrono::high_resolution_clock::now();
+
+// Calculate execution time
+auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+```
+
 
 Pour initialiser et afficher une grille, j'ai utilisé des lambdas fonctions.
 La fonction pour afficher la grille m'a servi uniquement pour tester si la fonction qui s'occupe de créer et d'initialiser la grille le faisait correctement.

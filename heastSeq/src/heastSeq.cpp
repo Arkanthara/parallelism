@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <unistd.h>
 #include <vector>
+#include <chrono>
 #include "writer.hpp"
 
 using namespace std;
@@ -23,6 +24,9 @@ int inline xy2i(int x, int y, int size) {
 
 
 int main(int argc, char * argv[]) {
+
+	// Get the time
+	auto start_time = std::chrono::high_resolution_clock::now();
 
 	// Initialise default iteration and default size
 	int max_iter = 100;
@@ -128,7 +132,19 @@ int main(int argc, char * argv[]) {
 		// Swap the two grid to have in grid the last state of the grid
 		swap(grid_2, grid);
 	}
+
+	// Get the time
+	auto end_time = std::chrono::high_resolution_clock::now();
+
+	// Calculate execution time
+	auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
 	// Write the results into a bmp file
 	write_to_bmp(size, grid, max_iter, 0, 1);
+
+	// Print execution time
+	cout << "Execution time: " << execution_time.count()/1000. << endl;
+
+	return 0;
 }
 

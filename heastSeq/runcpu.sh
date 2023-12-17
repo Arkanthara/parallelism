@@ -8,9 +8,12 @@
 #SBATCH --time 15:00				# Maximum time execution
 
 # Load modules for compiling and run program
-module load foss
-module load CUDA
+module load foss/2020b
+module load tbb
 
 echo $SLURM_NODELIST
 
+make cleanall
 make cpu
+
+./tp7 -i 256 -s 512
