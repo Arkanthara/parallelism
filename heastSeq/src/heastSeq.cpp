@@ -145,6 +145,12 @@ int main(int argc, char * argv[]) {
 	// Print execution time
 	cout << "Execution time: " << execution_time.count()/1000. << endl;
 
+	// Print number of iterations
+	cout << "Iterations: " << max_iter << endl;
+
+	// Print grid size
+	cout << "Grid size: " << size << "x" << size << endl;
+
 	return 0;
 }
 
