@@ -1,5 +1,5 @@
 CCPU = g++
-CGPU = nvc++
+CGPU = nvcc
 CFLAGS = -g -Wall -c
 OBJS = writer.o
 CLIBCPU = -ltbb -std=c++17
