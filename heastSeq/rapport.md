@@ -1,9 +1,13 @@
 ---
-title: TP7: C++ parallel algorithms
+title: TP7 C++ parallel algorithms
 author: Michel Donnet
 date: \today
+header-includes:
+- \usepackage{animate}
+- \usepackage{graphicx}
 ---
 
+\newpage
 
 # Introduction
 
@@ -109,8 +113,10 @@ Il s'agit dans mon code du calcul de l'équation de chaleur que l'on veut appliq
 
 La lambda fonction commence par prendre entre `[` et `]` toute les dépendances avec le reste du code.
 On indique alors qu'on veut que celle-ci capture l'adresse du premier élément de notre vecteur unidimensionnel dans la variable `start` par `start = grid_2.data()`, qui crée un nouveau pointeur `start` pointant sur le premier élément du vecteur.
+Pour le vecteur `grid`, on le passe également par valeur à la fonction par `grid = grid.data()`, ce qui va copier le vecteur et permettre de l'utiliser dans, par exemple, un gpu qui n'a pas accès à la pile.
+Si on mettait uniquement `grid`, on passerait le vecteur par référence et on pourrait l'utiliser dans des cpus, mais pas dans des gpus car ceux-ci n'ont pas accès à la pile des cpus.
+Le vecteur `grid` donne le dernier état de notre grille, donc on en a besoin dans l'équation de chaleur pour calculer l'état suivant de la grille.
 On indique également qu'on veut que la lambda fonction capture les valeurs définies précédement, comme par exemple `size`, `diagx`, etc.
-Enfin, on demande à la lambda fonction d'utiliser la grille `grid` contenant toutes les valeurs actuelles de notre grille, afin de calculer et de stocker dans `grid_2` le prochain état de la grille.
 
 Puis la lambda fonction prend dans les parenthèses l'élément donné par l'itération du `for_each`, ce qui dans notre cas correspond à l'élément `i` du vecteur unidimensionnel `grid_2`.
 
@@ -119,16 +125,49 @@ Dans le corps de la fonction, on commence par obtenir l'index de l'élément act
 Puis, une fois que l'on possède cette indication, on convertit cet index en coordonnées `x` et `y` d'un vecteur bidimensionnel au moyen des fonctions `inline` définies précédement, afin de traîter l'équation de chaleur comme si on travaillait avec une grille bidimensionnel.
 Grâce à ces coordonnées obtenues, on commence par vérifier que l'on ne se trouve pas au bord de la grille.
 Si on est au bord de la grille, on n'effectue aucun calcul, sinon, on effectue le calcul de l'équation de chaleur.
-On stocke le résultat dans l'élément item, qui correspond à l'élément `grid_2[index]` à cause du `for_each`.
+
+Notez que pour accéder aux éléments de notre vecteur `grid`, comme on possède le pointeur sur le premier élément, on accède toujours à la valeur stocké à l'adresse `grid + index`, qui correspond à la valeur stockée dans `grid[index]`...
+On stocke le résultat dans l'élément item, qui correspond à l'élément `grid_2[index]`.
 
 Le `swap` permet de mettre à jour `grid` pour que ce vecteur contienne toujours le dernier état de la grille.
 
 Enfin, on écrit le dernier état de la grille obtenu dans un fichier `.bmp` afin de pouvoir visualiser le résultat obtenu.
 
+\newpage
+
 # Résultats
 
-J'ai eu beaucoup de difficultés à faire tourner mon code sur baobab. Mais j'ai
+J'ai exécuté mon code sur baobab au moyen de 2 scripts bash, l'un s'appelant `runcpu.sh` et l'autre s'appelant `rungpu.sh`, permettant d'exécuter le code respectivement sur 32 cpus et sur 1 gpu.
+J'ai fait varier la taille de mon domaine de $10^2$ à $10^5$ et le nombre d'itérations de $2^0$ à $2^9$.
+J'ai ensuite créé des graphiques à l'aide de python avec les données obtenues.
+
+Voici les graphiques que j'ai obtenu:
+
+![](./images/graph_1.png)
+![](./images/graph_2.png)
+![](./images/graph_3.png)
 
 # Discussion
+
+J'ai eu beaucoup de difficultés à faire tourner mon code sur baobab.
+Faire tourner le code avec de nombreux cpus, je savais faire, mais pas avec un gpu.
+J'ai alors compris que je devais mettre dans mon script `#SBATCH gpus 1` au lieu de `#SBATCH cpus-per-task 32`.
+Ainsi, en changeant également la partition utilisée, mon code pouvait accéder à 1 gpu.
+Ensuite, la commande `nvc++` était introuvable pour compiler le code.
+J'ai fait appel à l'assistant qui a résolu le problème en me demandant de changer ces lignes:
+```bash
+// Before
+module load foss/2020b
+module load CUDA
+
+// After
+module load foss/2018.b
+module load NVHPC/21.9
+```
+
+Puis j'ai dû modifier mon code car au début j'avais passé par référence le vecteur `grid` dans le `for_each`, ce qui faisait que le gpu n'avait pas accès aux données du vecteur.
+Les modifications de mon code m'ont alors fait passer par valeur le vecteur `grid`.
+
+
 
 # Conclusion

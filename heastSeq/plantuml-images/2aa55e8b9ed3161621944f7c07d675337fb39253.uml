@@ -1,0 +1,25 @@
+@startuml
+
+<style>
+note {
+    backgroundcolor transparent
+    linecolor transparent
+}
+</style>
+
+note as graph_1
+    <img:/home/darcy/Documents/parallelism/heastSeq/images/graph_1.png>
+end note
+
+note as graph_2
+    <img:/home/darcy/Documents/parallelism/heastSeq/images/graph_2.png>
+end note
+
+note as graph_3
+    <img:/home/darcy/Documents/parallelism/heastSeq/images/graph_3.png>
+end note
+
+graph_1 -[hidden]d-> graph_2
+graph_2 -[hidden]d-> graph_3
+
+@enduml
