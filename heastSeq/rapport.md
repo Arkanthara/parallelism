@@ -63,20 +63,21 @@ Le coeur de mon programme se passe dans ces lignes de code:
 ```C++
 for(int iT = 0; iT < max_iter;iT++) {
 	for_each(std::execution::par_unseq, grid_2.begin(), grid_2.end(),
-		[start = grid_2.data(), size, grid, diagx, diagy, weightx, weighty](double& item) {
+		[start = grid_2.data(), size, grid = grid.data(), diagx, diagy, weightx, weighty](double& item) {
 			int index = &item - start;
 			int x = i2x(index, size);
 			int y = i2y(index, size);
 			if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
-				item = grid[index];
+				item = *(grid + index);
 			else
-				item = weightx*(grid[xy2i(x-1, y, size)]
-				+ grid[xy2i(x+1, y, size)]
-				+ grid[xy2i(x, y, size)]*diagx)
-				+ weighty*(grid[xy2i(x, y-1, size)]
-				+ grid[xy2i(x, y+1, size)]
-				+ grid[xy2i(x, y, size)]*diagy);
+				item = weightx*(*(grid + xy2i(x-1, y, size))
+				+ *(grid + xy2i(x+1, y, size))
+				+ *(grid + xy2i(x, y, size)) * diagx)
+				+ weighty * (*(grid + xy2i(x, y-1, size))
+				+ *(grid + xy2i(x, y+1, size))
+				+ *(grid + xy2i(x, y, size))*diagy);
 		});
+
 	swap(grid_2, grid);
 }
 ```
@@ -125,6 +126,8 @@ Le `swap` permet de mettre à jour `grid` pour que ce vecteur contienne toujours
 Enfin, on écrit le dernier état de la grille obtenu dans un fichier `.bmp` afin de pouvoir visualiser le résultat obtenu.
 
 # Résultats
+
+J'ai eu beaucoup de difficultés à faire tourner mon code sur baobab. Mais j'ai
 
 # Discussion
 
