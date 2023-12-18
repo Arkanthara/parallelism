@@ -6,21 +6,18 @@ CLIBCPU = -ltbb -std=c++17
 CLIBGPU = -stdpar -std=c++17
 .PHONY = clean cleanbmp
 
-TARGET = tp7
+TARGET = tp7_cpu tp7_gpu
 
 SRC_DIR = ./src
 BUILD_DIR = $(shell if [ ! -d "./build" ]; then mkdir build; echo build; else echo build; fi;)
 
 all: $(TARGET)
 
-cpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
-	$(CCPU) $^ -o $(TARGET) $(CLIBCPU)
+tp7_cpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
+	$(CCPU) $^ -o $@ $(CLIBCPU)
 
-gpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
-	$(CGPU) $^ -o $(TARGET) $(CLIBGPU)
-
-$(TARGET): $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
-	$(CCPU) $^ -o $@ $(CLIBCPU) 
+tp7_gpu: $(SRC_DIR)/heastSeq.cpp $(BUILD_DIR)/$(OBJS)
+	$(CGPU) $^ -o $@ $(CLIBGPU)
 
 $(BUILD_DIR)/writer.o: $(SRC_DIR)/writer.cpp
 	$(CCPU) $(CFLAGS) $< -o $@

@@ -15,4 +15,8 @@ echo $SLURM_NODELIST
 
 make cpu
 
-./tp7 -i 256 -s 512
+for s in 100 1000 10000; do
+	for i in 1 2 4 8 16 32 64 128 256 512; do
+		./tp7_cpu -s $s -i $i
+	done
+done
