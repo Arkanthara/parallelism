@@ -15,7 +15,7 @@ module load NVHPC/21.9
 
 echo $CUDA_VISIBLE_DEVICES
 
-make gpu
+make tp7_gpu
 
 for s in 100 1000 10000; do
 	for i in 1 2 4 8 16 32 64 128 256 512; do

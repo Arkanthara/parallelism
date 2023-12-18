@@ -29,7 +29,7 @@ cleanbmp:
 	@rm T_*
 
 cleanoutput:
-	@rm ./err/* ./out/*
+	@rm -rf ./err ./out
 
 cleanall:
 	@rm -rf T_* ./err ./out ./build $(TARGET)

@@ -1,0 +1,92 @@
+0
+nvc++ src/heastSeq.cpp build/writer.o -o tp7_gpu -stdpar -std=c++17
+Execution time: 0.269
+Iterations: 1
+Grid size: 100x100
+Execution time: 0.24
+Iterations: 2
+Grid size: 100x100
+Execution time: 0.239
+Iterations: 4
+Grid size: 100x100
+Execution time: 0.239
+Iterations: 8
+Grid size: 100x100
+Execution time: 0.227
+Iterations: 16
+Grid size: 100x100
+Execution time: 0.23
+Iterations: 32
+Grid size: 100x100
+Execution time: 0.227
+Iterations: 64
+Grid size: 100x100
+Execution time: 0.233
+Iterations: 128
+Grid size: 100x100
+Execution time: 0.242
+Iterations: 256
+Grid size: 100x100
+Execution time: 0.233
+Iterations: 512
+Grid size: 100x100
+Execution time: 0.246
+Iterations: 1
+Grid size: 1000x1000
+Execution time: 0.25
+Iterations: 2
+Grid size: 1000x1000
+Execution time: 0.258
+Iterations: 4
+Grid size: 1000x1000
+Execution time: 0.236
+Iterations: 8
+Grid size: 1000x1000
+Execution time: 0.237
+Iterations: 16
+Grid size: 1000x1000
+Execution time: 0.286
+Iterations: 32
+Grid size: 1000x1000
+Execution time: 0.254
+Iterations: 64
+Grid size: 1000x1000
+Execution time: 0.27
+Iterations: 128
+Grid size: 1000x1000
+Execution time: 0.298
+Iterations: 256
+Grid size: 1000x1000
+Execution time: 0.349
+Iterations: 512
+Grid size: 1000x1000
+Execution time: 1.837
+Iterations: 1
+Grid size: 10000x10000
+Execution time: 1.846
+Iterations: 2
+Grid size: 10000x10000
+Execution time: 1.899
+Iterations: 4
+Grid size: 10000x10000
+Execution time: 1.965
+Iterations: 8
+Grid size: 10000x10000
+Execution time: 2.085
+Iterations: 16
+Grid size: 10000x10000
+Execution time: 2.41
+Iterations: 32
+Grid size: 10000x10000
+Execution time: 2.959
+Iterations: 64
+Grid size: 10000x10000
+Execution time: 4.096
+Iterations: 128
+Grid size: 10000x10000
+Execution time: 6.377
+Iterations: 256
+Grid size: 10000x10000
+Execution time: 11.002
+Iterations: 512
+Grid size: 10000x10000

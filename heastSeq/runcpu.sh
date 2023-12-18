@@ -13,7 +13,7 @@ module load tbb
 
 echo $SLURM_NODELIST
 
-make cpu
+make tp7_cpu
 
 for s in 100 1000 10000; do
 	for i in 1 2 4 8 16 32 64 128 256 512; do
