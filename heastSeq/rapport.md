@@ -3,6 +3,7 @@ title: TP7 C++ parallel algorithms
 author: Michel Donnet
 date: \today
 header-includes:
+- \usepackage{pmboxdraw}
 ---
 
 \newpage
@@ -14,6 +15,42 @@ Cela nous permettra de faire tourner notre code sur des CPUs, mais également su
 
 
 # Méthodologie
+
+Voici la structure de mon dossier:
+
+```bash
+├── graph.py
+├── Makefile
+├── rapport.pdf
+├── runcpu.sh
+├── rungpu.sh
+├── src
+│   ├── heastSeq.cpp
+│   ├── writer.cpp
+│   └── writer.hpp
+└── TP7.pdf
+
+```
+
+Un Makefile permet de compiler le code soit pour cpu (`make tp7_cpu`), soit pour gpu (`make tp7_gpu`).
+La commande `make` va compiler le code pour cpu et pour gpu.
+Lorsque l'on compile le code pour cpu, on obtient un exécutable nommé `tp7_cpu` et lorsque l'on compile le code pour gpu, on obtient un exécutable nommé `tp7_gpu`.
+
+Voici les paramètres que l'on peut donner aux exécutables:
+```shell
+Usage: ./tp7_cpu
+	-i [number of iterations]
+	-s [size of the squared grid]
+```
+
+et voici un exemple d'exécution de mon programme:
+```shell
+./tp7_cpu -i 100 -s 256
+
+Execution time: 0.228
+Iterations: 100
+Grid size: 256x256
+```
 
 Mon code est divisible en trois parties:
 

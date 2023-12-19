@@ -40,7 +40,7 @@ int main(int argc, char * argv[]) {
 				size = atoi(optarg);
 				if (size == 0) {
 					cerr << "Error: size must be a positive number !" << endl;
-					cout << "Usage: ./"<< argv[0] << endl;
+					cout << "Usage: "<< argv[0] << endl;
 					cout << "	-i [number of iterations]" << endl;
 					cout << "	-s [size of the squared grid]" << endl;
 				}
@@ -49,13 +49,13 @@ int main(int argc, char * argv[]) {
 				max_iter = atoi(optarg);
 				if (max_iter == 0) {
 					cerr << "Error: number of iterations must be a positive number !" << endl;
-					cout << "Usage: ./"<< argv[0] << endl;
+					cout << "Usage: "<< argv[0] << endl;
 					cout << "	-i [number of iterations]" << endl;
 					cout << "	-s [size of the squared grid]" << endl;
 				}
 				break;
 			case '?':
-				cout << "Usage: ./"<< argv[0] << endl;
+				cout << "Usage: "<< argv[0] << endl;
 				cout << "	-i [number of iterations]" << endl;
 				cout << "	-s [size of the squared grid]" << endl;
 				break;
