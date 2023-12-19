@@ -3,8 +3,6 @@ title: TP7 C++ parallel algorithms
 author: Michel Donnet
 date: \today
 header-includes:
-- \usepackage{animate}
-- \usepackage{graphicx}
 ---
 
 \newpage
@@ -147,6 +145,7 @@ Voici les graphiques que j'ai obtenu:
 ![](./images/graph_2.png)
 ![](./images/graph_3.png)
 
+
 # Discussion
 
 J'ai eu beaucoup de difficultés à faire tourner mon code sur baobab.
@@ -168,6 +167,50 @@ module load NVHPC/21.9
 Puis j'ai dû modifier mon code car au début j'avais passé par référence le vecteur `grid` dans le `for_each`, ce qui faisait que le gpu n'avait pas accès aux données du vecteur.
 Les modifications de mon code m'ont alors fait passer par valeur le vecteur `grid`.
 
+Voici le ratio que j'ai obtenu pour le temps d'exécution sur 1 GPU comparé au temps d'exécution sur 32 CPUs (J'ai appliqué la formule suivante: temps d'exécution sur CPU divisé par temps d'exécution sur GPU):
 
+![](./images/ratio_1.png)
+![](./images/ratio_2.png)
+![](./images/ratio_3.png)
+
+Nous pouvons alors remarqué que pour une grille de taille 100 x 100, le ratio obtenu est très faible.
+En effet, lorsque l'on observe le temps d'exécution de nos CPUs, on voit que celui-ci est très faible par rapport au temps d'exécution sur GPU.
+Ceci est normal, car le problème est de petite taille, et selon la loi d'Amdahl, pour un problème fixé, on voit que la parallélisation n'est pas très utile.
+Donc utiliser un GPU qui possède des milliers d'unité de calcul à basse fréquence est moins bien que d'utiliser quelques CPUs à haute fréquence.
+D'autant plus qu'il faut transmettre les données au GPU, ce qui prend un temps non négligeable pour un petit problème.
+
+Cependant, lorsque l'on augmente la taille du problème, en augmentant la taille du domaine, on peut observer que le ratio augmente considérablement...
+On a à peu près fait fois 10 le ratio entre GPU et CPU lorsqu'on a multiplié la taille de notre domaine par 10.
+On peut alors observer que le GPU possède un temps d'exécution assez constant, comparé au temps d'exécution sur CPUs qui a tendance à augmenter rapidement.
+Cela vérifie la loi de Gustafson, disant que plus le nombre d'unités de calcul augmente, plus le travail peut être conséquent.
+En effet, en augmentant la taille de notre problème, on donne du travail à des milliers d'unité de calcul du GPU qui travaillent à plus basse fréquence que les 32 CPUs, mais qui ont l'avantage d'être plus nombreuses que les 32 CPUs.
+Le temps d'exécution est à peu près constant (et d'ailleurs équivalent au temps d'exécution obtenu pour une grille de taille 100x100 car on est toujours à 0.2 secondes de temps d'exécution), car on peut encore augmenter la taille du problème: toutes les unités de calcul du GPU n'ont pas encore eu à travailler, contrairement aux 32 CPUs qui ont un temps d'exécution augmentant considérablement.
+Le temps d'exécution sur GPU est alors 3 fois meilleur que le temps d'exécution sur CPU, comme nous pouvons le voir sur le graphique nous montrant les ratios des temps d'exécution.
+
+Enfin, pour un problème de taille $10^4$, on peut observer des choses intéressantes:
+plus la taille du problème augmente et plus le temps d'exécution sur CPU augmente, alors que le temps d'exécution sur GPU reste à peu près constant.
+C'est toujours parce que le GPU n'a pas reçu de travail suffisamment important pour occuper toutes ses unités de calcul.
+Mais en revanche, on peut remarquer que à partir de 128 itérations, le temps d'exécution sur GPU commence également légèrement à augmenter...
+On commence donc à avoir donné un travail suffisamment grand pour que toutes les unités de calcul soient occupées.
+Le temps d'exécution sur GPU est alors 8 fois meilleur que le temps d'exécution sur CPU.
+Cependant, on peut observer que pour un nombre d'itérations élevé, le temps d'exécution sur GPU commence à suivre la courbe du temps d'exécution sur CPUs, mais augmente plus doucement.
+On peut également remarquer que le ratio entre le temps d'exécution sur CPU et le temps d'exécution sur GPU commence à ne plus augmenter autant...
+Cela signifierait qu'on commencerait à atteindre un seuil, et que le ratio se stabiliserait à une valeur maximale.
+Le ratio ne va donc pas croître indéfiniment, mais il va se stabiliser, ce qui vérifie la loi d'Amdahl indiquant que pour un travail fixé, la parallélisation du problème permettra de gagner des performances jusqu'à un certain seuil...
+Il faudrait alors modifier la puissance de calcul pour modifier le ratio
 
 # Conclusion
+
+Donc pour un petit problème donné, exécuter le problème sur un GPU ne va pas nous permettre de gagner des performances, car toutes les unités du GPU ne travailleront pas et il y aura beaucoup d'overhead, faisant un temps d'exécution constant.
+Donc pour un petit problème donné, exécuter le problème sur un CPU qui possède une plus grande fréquence d'horloge que les unités de calcul d'un GPU permettra d'avoir un temps d'exécution meilleur.
+
+Mais plus on augmente la taille du problème, plus cela devient intéressant d'exécuter le problème sur un GPU car ses unités de calcul vont être utilisés et comme un GPU possède des milliers d'unités de calcul, le temps d'exécution sur GPU va devenir meilleur que le temps d'exécution sur CPU.
+Cela vérifie la loi de Gustafson disant que plus le nombre d'unités de calcul augmente, plus on peut résoudre des gros problèmes.
+
+Enfin, à un moment donné, la taille du problème est suffisamment importante pour utiliser toutes les unités de calcul du GPU, ce qui fait que le ratio du temps d'exécution sur GPU et sur CPU atteint une limite, ce qui vérifie la loi d'Amdahl indiquant que pour un problème fixé, la parallélisation permettra de gagner des performances jusqu'à un certain seuil.
+
+Donc pour un problème donné, plusieurs défis sont à relever:
+
+1. Réussir à paralléliser le plus possible le problème
+2. Paralléliser le problème pour pouvoir également le faire tourner sur un GPU
+3. Trouver le juste milieu entre GPU et CPU afin de minimiser le temps d'exécution du problème

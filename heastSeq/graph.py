@@ -84,4 +84,12 @@ for i in range(3):
     plt.ylabel("Execution time")
     plt.legend()
     plt.show()
+    plt.figure()
+    plt.title(f"Ratio GPU/CPU for a grid of size {size[i]}x{size[i]}")
+    plt.plot(iterations, gpu_results[i]/cpu_results[i], label="GPU/CPU")
+    plt.xscale('log', base = 2)
+    plt.xlabel("Number of iterations")
+    plt.ylabel("Execution time ratio")
+    plt.legend()
+    plt.show()
 
