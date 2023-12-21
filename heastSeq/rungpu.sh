@@ -7,10 +7,7 @@
 #SBATCH --time 15:00				# Maximum time execution
 
 # Load modules for compiling and run program
-# module load foss/2018b
-# module load NVHPC/21.9
 module load foss/2018b
-# module load CUDA
 module load NVHPC/21.9
 
 echo $CUDA_VISIBLE_DEVICES
