@@ -28,24 +28,26 @@ Ce qui nous donne $o_2, o_3, \dots, o_n, d_1$
 Combien faut-il d'étages si on a N entrées et N sorties ?
 $$n = log_2(N)$$
 
-Chaque étage contient combien de switchs 2x2 ?:
+Chaque étage contient combien de switchs 2x2 ?
+
 Il en faut $\frac{N}{2}$
 
-Coût de ce réseau: $O(\frac{N}{2} \times log_2N = O(Nlog_2N)$ (Même chose que hypercube
+Coût de ce réseau: $O(\frac{N}{2} \times log_2N = O(Nlog_2N)$ (Même chose que hypercube)
 
 Les réseaux multi-étages sont moins chers que le crossbar $O(N^{2})$, mais il est aussi moins performant: on dit que c'est un réseau blocant: un choix de chemin input->output peut en empêcher un autre de se réaliser...
 
 On peut facilement modifier les commutateurs de 2 pour faire un broadcast
 
 
-Le broadcast ddse fait alors avec 1 traversée du réseau, soit donc en log_2N étabpes.
+Le broadcast se fait alors avec 1 traversée du réseau, soit donc en $log_2N$ étapes.
 
-On remarque aussi qu'on peut envoyerdes messages en pipeline sans attendre qu'un message soit earrivé pour envoyer le suivant.
+On remarque aussi qu'on peut envoyer des messages en pipeline sans attendre qu'un message soit arrivé pour envoyer le suivant.
 
 
 ## Les réseaux Fat Tree
 
-C'est une forme de réseau multiétage où des commutateurs sont reliées selon une structure d'arbre, La particularité est que la bande passante augmente à mesure qu'on s'approche de la racine.
+C'est une forme de réseau multiétage où des commutateurs sont reliées selon une structure d'arbre.
+La particularité est que la bande passante augmente à mesure qu'on s'approche de la racine.
 
 ## Routage sur un arbre
 
@@ -55,28 +57,34 @@ Supposons que l'on veut connaître l'ancêtre commun. C'est le préfixe commun (
 
 Plusieurs chemins permet de rendre le réseau moins blocant.
 
-# Définition
+## Définition
 
-Puissance de calcull d'un processeur: R = Flop/s ou op/s ou cycle ou fréquence
+Puissance de calcul d'un processeur: R = Flop/s ou op/s ou cycle ou fréquence
+
 Travail: W = nombre d'opérations réalisées pour résoudre un problème
+
 Il y a le lien évident entre W et R:
+
 W = R * T où T est le temps d'exécution.
 
-Degré de parallélisme: p(t): c'est le nombre de PE actif au moment t d'une exécution parallèle. (shéma du prof) En parallèle, le temps d'exécution est donné par: $T_{par} = T_{max} - T_{min}$
+Degré de parallélisme: p(t): c'est le nombre de PE actif au moment t d'une exécution parallèle. (shéma du prof)
+
+En parallèle, le temps d'exécution est donné par: 
+$T_{par} = T_{max} - T_{min}$
 
 $$W = \int_{T_{min}}^{T_{max}} p(t)Rdt$$
 
 En séquentiel, le temps nécessaire serait
-$$T_{seq} = \frac{W}{R} = \int^{T_{max}}_{T_{min}} p(t) dt$$
+$$T_{seq} = \frac{W}{R} = \int_{T_{min}}^{T_{max}} p(t) dt$$
 
 On définit alors le speedup S comme:
-$S = \frac{T_{seq}}{T_{par}}$
+$$S = \frac{T_{seq}}{T_{par}}$$
 Combien de fois va-t-on plus vite en parallèle ?
 
 Ici, on a $T_{seq} = \int_{T_{min}}^{T_{max}} p(t) dt$ et $T_{par} = T_{max} - T_{min}$
 
 
-$S = \frac{1}{T_{max}-T_{min}} \int_{T_{min}}^{T_{max}} p(t) dt$
+$$S = \frac{1}{T_{max}-T_{min}} \int_{T_{min}}^{T_{max}} p(t) dt$$
 
 Le speed up est donc le degré de parallélisme moyen
 
@@ -84,53 +92,68 @@ Overhead: PE réservés, mais inactifs
 
 L'overhead est une mesure du travail perdu en raison des processeurs unactifs durant l'exécution parallèle.
 On exprime l'overhead $\Delta$ comme
-$\Delta = W_{par} - W_{seq}$ (note $\Omega $ ici... pas compris...)
-$=(p_{max}T_{par} - T_{seq}) R$
+$$\Delta = W_{par} - W_{seq}$$
+$$=(p_{max}T_{par} - T_{seq}) R$$
 Quelles sont les sources d'overhead en parallélisme ?
+
 - communication/coordination (overhead peut prendre plus de temps que le calcul lui-même...
 - mauvais équilibrage de charge, synchronisation
-- Algorithme: certains algorithmes séquentiels se parallélisent mal et on en prend un autre en parallèle. Ex: quick-sort (O(nlogn)) (difficile à paralléliser -> bubble sort (O(n^{2})) (facile à paralléliser)
+- Algorithme: certains algorithmes séquentiels se parallélisent mal et on en prend un autre en parallèle.
+Ex: quick-sort ($O(nlogn)$) (difficile à paralléliser vs bubble sort ($O(n^{2})$) (facile à paralléliser)
 
-Revisitions la définition du speedup:
+__Revisitions la définition du speedup__:
 
-$S = \frac{T_{seq}}{T_{par}}$ où $T_{seq}$ est le temps du meilleur algorithme connu pour le problème. $T_{seq} \neq T_{par} (p=1)$ Cela signifie que le temps séquentiel est différent du temps parallèle exécuté avec un seul processeur.
+$$S = \frac{T_{seq}}{T_{par}}$$
+où $T_{seq}$ est le temps du meilleur algorithme connu pour le problème.
+
+$$T_{seq} \neq T_{par} (p=1)$$
+Cela signifie que le temps séquentiel est différent du temps parallèle exécuté avec un seul processeur.
 
 Mais cette définition formelle ne s'applique pas aux grosses machines HPC qui tournent des codes trop grands pour être exécutable en séquentiel
 
-$S = \frac{T_{par}(p = p_{ref}}{T_{par}(p)}$
+$$S = \frac{T_{par}(p = p_{ref})}{T_{par}(p)}$$
 
-# Définition
+## Définition
 Efficacité:
-$E = \frac{S}{p}$ (p: nombre de processeurs...). On se compare à un speedup idéal qui serait $S = p$...
+$E = \frac{S}{p}$ (p: nombre de processeurs...).
 
-En général, $S \lt p$ car il y a de l'overhead...
+On se compare à un speedup idéal qui serait $S = p$...
 
-# Relations utiles
+En général, $S < p$ car il y a de l'overhead...
+
+## Relations utiles
 
 1.
-$E = \frac{T_{seq}}{pT_{par}} \Rightarrow T_{par} = \frac{T_{seq}}{E\times p}$ C'est comme si on avait un nombre effectif de processeurs $p' = Ep$
+    $$E = \frac{T_{seq}}{pT_{par}} \Rightarrow T_{par} = \frac{T_{seq}}{E\times p}$$
+C'est comme si on avait un nombre effectif de processeurs $p' = Ep$
 
-Aussi, en multipliant par R
--T_{par} = \frac{T_{seq} R}{E p R} = \frac{W_{seq}}{pER}$ C'est comme si en parallèle les processeurs avaient une puissance réduite $R' = ER$
+    Aussi, en multipliant par R
+$$T_{par} = \frac{T_{seq} R}{E p R} = \frac{W_{seq}}{pER}$$
+C'est comme si en parallèle les processeurs avaient une puissance réduite $R' = ER$
 2.
 
-$W_{par} = pRT_{par} = W_{seq} + \Delta$ avec $\Delta$ l'overhead. D'où:
-$T_{par} = \frac{W_{seq}}{Rp} + \frac{\Delta}{Rp}$ et ainsi:
-$S = \frac{T_{seq}}{T_{par}} = \frac{W_{seq}/R}{W_{seq}/Rp + \Delta/Rp} = \frac{p}{1 + \frac{\Delta}{W_{seq}}$
+    $$W_{par} = pRT_{par} = W_{seq} + \Delta$$ avec $\Delta$ l'overhead.
+
+    D'où:
+$$T_{par} = \frac{W_{seq}}{Rp} + \frac{\Delta}{Rp}$$
+et ainsi:
+$$S = \frac{T_{seq}}{T_{par}} = \frac{W_{seq}/R}{\frac{W_{seq}}{Rp} + \frac{\Delta}{Rp}} = \frac{p}{1 + \frac{\Delta}{W_{seq}}}$$
 
 Donc le speedup s'éloigne du speedup idéal $S = p$ en raison de l'importance de l'overhead en regard du travail qu'on parallélise.
 
-# Loi d'Amdahl (strong scaling)
+## Loi d'Amdahl (strong scaling)
 
 Cette loi donne une vision pessimiste du potentiel de la parallélisation
 
 On va faire l'hypothèse que le code se parallélise idéalement sur une partie et pas du tout sur une autre partie. On va avoir:
+
 - $\alpha W$ fraction du travail non parallélisable
 - $(1-\alpha) W$ travail qui se parallélise idéalement.
 
-$T_{par} = \frac{\alphaW}{R} (temps\ séquentiel) + \frac{(1-\alpha)W}{pR} (temps\ parallèle)$
-$T_{seq} = \frac{W}{R}$
+$$T_{par} = \frac{\alpha W}{R} (temps\ séquentiel) + \frac{(1-\alpha)W}{pR} (temps\ parallèle)$$
+$$T_{seq} = \frac{W}{R}$$
 
-$S = \frac{T_{seq}}{T_{par}} = \frac{W/R}{\alpha W/R + (1 - \alpha) W/R} = \frac{1}{\alpha + (1 - \alpha)/p} \leq \frac{1}{\alpha}$
+$$S = \frac{T_{seq}}{T_{par}} = \frac{\frac{W}{R}}{\alpha \frac{W}{R} + \frac{(1 - \alpha) W}{pR}} = \frac{1}{\alpha + \frac{1 - \alpha}{p}} \leq \frac{1}{\alpha}$$
 
-Si $\alpha = 10%$ et $p = 1000$ sur les $90%$ restant, on a que $S = 9.91 \leq 10$ et $E = \frac{S}{p} = 10^{-2}$
+Si $\alpha = 10$% et $p = 1000$ sur les $90$% restant, on a que 
+$$S = 9.91 \leq 10$$ et $$E = \frac{S}{p} = 10^{-2}$$

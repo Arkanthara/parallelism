@@ -8,38 +8,39 @@ Une tâche $T_{i}$ est un ensemble d'instructions réalisées sur un seul PE, en
 Une tâche est caractérisée par ses données d'entrée $E_{i}$ et données de sortie $S_{i}$.
 
 
-#### Granularité
+### Granularité
 La granularité est une mesure de la taille de la tâche (nombre d'instructions réalisées pendant cette tâche...), à savoir le nombre d'instructions réalisée.
 
 On parle de granularité fine, moyenne ou grossière en fonction de sa taille.
 
 
-#### Indépendance de deux tâches
+### Indépendance de deux tâches
 
 $T_{i}$ et $T_{j}$ sont indépendants si
-$S_{i} \inset S_{j} = \null$ donc pas de données communes modifiées
-$S_{i} \inset E_{j} = \null$ donc pas de données lues par $T_{j}$ et modifiée par $T_{i}$
-$S_{i} \inset E_{i} = \null$ 
-$E_{i} \inset E_{j}$ -> pas de contrainte dessus....
+
+- $S_{i} \subset S_{j} = \null$ donc pas de données communes modifiées
+- $S_{i} \subset E_{j} = \null$ donc pas de données lues par $T_{j}$ et modifiée par $T_{i}$
+- $S_{i} \subset E_{i} = \null$ 
+- $E_{i} \subset E_{j}$ -> pas de contrainte dessus....
 
 Deux tâches qui sont indépendantes peuvent être exécutées dans un arbre quelconque.
 
 Deux tâches qui ne sont pas indépendantes doivent être exécutées dans un ordre spécifié.
 On notera par exemple:
-$$T_{i} \lt T_{j}$$
+$$T_{i} < T_{j}$$
 pour indiquer que $T_{i}$ doit être fini avant que $T_{j}$ ne démarre.
 
 __Deux tâches qui sont indépendantes peuvent s'exécuter en parallèle !__
 
 
-###### Cela peut s'exprimer par une relation de précédence et un graphe de précédence.
+Cela peut s'exprimer par une __relation de précédence__ et un __graphe de précédence__.
 
 Notre question sera de voir comment on peut paralléliser une application sur la base de son graphe de précédence.
 
-# 6.2 Partitionnement, placement et ordonnancement
+## 6.2 Partitionnement, placement et ordonnancement
 
 
-#### Partitionnement
+### Partitionnement
 C'est la division d'un problème en tâches
 
 Souvent, le partitionnement concerne la division des données en sous-domaines de calcul.
@@ -53,20 +54,21 @@ Le partitionnement est au choix de l'utilisateur, et il y a plusieurs contrainte
 
 En général, on s'attend à ce que la granularité optimale requière la solution d'un problème d'optimisation.
 
-#### Placement
+### Placement
 C'est le choix du processeur qui exécutera chacune des tâches résultant du partitionnement.
 
 En général, cela peut aussi être un problème d'optimisation si on veut minimiser le temps d'exécution:
 
 Exemple: On a des tâches indépendantes, mais de durée différente.
+```text
 T1: --------------
 T2: -----
 T3: ----------
-
+```
 La répartition de ces tâches sur plusieurs processeurs avec la contrainte qu'ils soient tous également chargé est un problème qui n'est pas simple (optimisation combinatoire)
 
 
-#### Ordonnancement
+### Ordonnancement
 À quel moment chaque processeur peut commencer les tâches dont il a la charge, de sorte à ne pas violer des dépendances, tout en minimisant le temps d'exécution total.
 
 __La méthode des temps au plus tôt et au plus tard__
@@ -97,7 +99,7 @@ Par exemple $T_{7} \rightarrow T_{7}'\ et\ T_{7}''$
 
 ## 6.3 Équilibrage de charge
 
-En anglais: load balancing
+En anglais: __load balancing__
 
 Le but est que tous les processeurs soient occupés pendant la même durée.
 
@@ -107,13 +109,13 @@ C'est ce qu'on appelle le load balancing.
 
 On va proposer ci-dessous des approches qui favorisent cet équilibrage...
 
-##### Métrique de déséquilibrage de charge
+### Métrique de déséquilibrage de charge
 
-Soit $T_{i} le temps cpu du processeur $p_{i}$ mesuré entre 2 points de synchronisation (tous les processeurs doivent avoir fini leur travail pour passer le point de synchronisation...).
+Soit $T_{i}$ le temps cpu du processeur $p_{i}$ mesuré entre 2 points de synchronisation (tous les processeurs doivent avoir fini leur travail pour passer le point de synchronisation...).
 
 On définit le temps moyen $\mu = \frac{1}{p} \sum_{i=1}^{p} T_{i}$
 
-Si tous les $T_{i} sont égaux, on a un équilibre parfait.
+Si tous les $T_{i}$ sont égaux, on a un équilibre parfait.
 Le déséquilibre se mesurera sur la variation de ces $T_{i}$.
 
 La déviation standard n'est pas forcément le meilleur critère....
@@ -123,7 +125,7 @@ Mieux vaut comparer le temps du processeur le plus lent à la moyenne.
 $$m = max_{i} T_{i}$$
 $$\Delta = m - \mu$$
 $$\Delta \geq 0$$
-$$\Delta = 0 \Rightarrow \text{équilibre parfait et plus \Delta augrmente, plus le déséquilibre augmente}$$
+$$\Delta = 0 \Rightarrow \text{équilibre parfait et plus}\ \Delta\ \text{ augrmente, plus le déséquilibre augmente}$$
 
 On peut aussi le mesurer de façon relative
 $$\Delta ' = \frac{\Delta}{\mu} = \frac{m}{\mu} - 1$$
