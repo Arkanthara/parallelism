@@ -2,7 +2,7 @@ Chaque processeur a ses propres données.
 
 Il faut donc partitionner (découper) le problème sur les PE
 
-_Pour implémenter le modèle à échange de messages (MPI), on a les hypothèses suivantes. garanties par le système d'échange de message_
+__Pour implémenter le modèle à échange de messages (MPI), on a les hypothèses suivantes, garanties par le système d'échange de message__
 
 - Chaque PE connait le nombre p de PE impliqués
 
@@ -12,9 +12,9 @@ _Pour implémenter le modèle à échange de messages (MPI), on a les hypothèse
 
 - Il existe des primitives de communication qui permettent d'échanger des données entre les PE. (MPI_Send, MPI_Recv) (Système boîte aux lettres pour chaque PE)
 
-##### Exemple de programme avec échange de messages
+#### Exemple de programme avec échange de messages
 
-But: faire une transposition des données qui va inverser l'ordre du tableau...
+__But__: faire une transposition des données qui va inverser l'ordre du tableau...
 
 On veut paralléliser cela: on découpe le tableau
 
@@ -22,37 +22,36 @@ Pseudo code MPI
 
 ```cpp
 // Créer les données dans chaque sous-vecteur
-// A sera un vecteur de taille $\frac{n}{p}
+// A sera un vecteur de taille n/p
 for i = 0 to n/p - 1
     A[i] = my_rank
 ```
 
+```cpp
 // Créer les données dans chaque sous-vecteur
-// A sera un vecteur de taille $\frac{n}{p}$
-for i = 0 to $\frac{n}{p}$ - 1
-    $A[i] = my\_rank \times(\frac{n}{p}) + i$ 
+// A sera un vecteur de taille n/p
+for i = 0 to n/p - 1
+    A[i] = my_rank (n/p) + i 
 
 // Ces lignes de code ne necessitent aucune communication et les PE travaillent
-
 // indépendamment
-
+```
+```cpp
 // Communication:
+source = p - 1 - my_rank // Le PE symétrique
+dest = source
+MPI_Sendrecv(A, n/p, dest, B, n/p, source)
+// n/p = taille, A: message, B: buffer pour recevoir le message
+```
 
-$source = p - 1 - my\_rank$ // Le PE symétrique
-
-$dest = source$
-
-$MPI\_Sendrecv(A, \frac{n}{p}, dest, B, \frac{n}{p}, source)$ 
-
-// $\frac{n}{p} =$ taille, A: message, B: buffer pour recevoir le message
-
+```cpp
 // Transposition locale:
 
-for i = 0, $\frac{n}{p} - 1$
+for i = 0, n/p - 1
+    A[i] = B[n/p - 1 - i]
+```
 
-    $A[i] = B[\frac{n}{p} - 1 - i]$
-
-#### Primitives de communication
+### Primitives de communication
 
 Dans un système à échange de messages, il existe de nombreuses primitives qui réalisent optimalement des patterns d'échange de données
 
@@ -98,7 +97,7 @@ Dans un système à échange de messages, il existe de nombreuses primitives qui
 
 
 
-*Un algorithme parallèle par échange de message est une combinaison d'algorithmes local à chaque PE et de primitives de communication.*
+__Un algorithme parallèle par échange de message est une combinaison d'algorithmes local à chaque PE et de primitives de communication.__
 
 Echange de message: pour ou contre ?
 
@@ -119,9 +118,5 @@ Echange de message: pour ou contre ?
 - Coordination implicite des processeurs
   
   On ne peut pas recevoir un message avant qu'il n'ait été envoyé. On préserve la causalité (dépendance) entre donnée.
-
-
-
-$\Rightarrow$ Semaine prochaine il y aura cours à la place d'exercices et dans 2 semaines, il y aura exercice à la place du cours.
 
 

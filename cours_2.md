@@ -23,7 +23,7 @@ Donc le rapport $\frac{R}{P} = \frac{n\mu}{n\mu^2} = \frac{1}{\mu}$ que l'on veu
 
 Donc $\mu \rightarrow 0$ et $n \rightarrow \inf$
 
-2. On peut aussi trouver des performances avec des améliorations architecturales
+## On peut aussi trouver des performances avec des améliorations architecturales
 
 - Comment agencer les différents composants pour maximiser les performances du tout ?
     * Mémoire cache: avoir de la mémoire proche du CPU (Même chip) pour diminuer le goulet d'étranglement de Von Neumann
@@ -31,12 +31,15 @@ Donc $\mu \rightarrow 0$ et $n \rightarrow \inf$
 On prend d'un coup plusieurs données de la mémoire)
     * Exécution en pipeline
     * Parallélisme: avoir plusieurs PE ainsi qu'à tous les niveaux -> plusieurs instructions en même temps dans un coeur (ILP: Instruction Level Parallelism)
-    * Comment faire mieux ? Memory Wall !
+    * Comment faire mieux ? __Memory Wall__ !
+
 L'accès aux données est l'élément limitatif tant du point de vue des performances que de l'énergie consommée.
+
 -> Il faudrait fonc calculer directement dans la mémoire
+
     -> par exemple les Automates Cellulaires
 
-3. Algorithmes
+## Algorithmes
 
 Solution de systèmes d'équations linéaire
 
@@ -56,7 +59,7 @@ cryptographie: factoriser de très grands nombres pour casser un code style RSA
 Ce succès a été obtenu grâce à un algo très sophistiqué)
 
 
-#### Évolution des machines HPC (High Performance Computers)
+## Évolution des machines HPC (High Performance Computers)
 
 Il y a toujours eu des vesoins pour obtenir plus de performances que les ordinateurs séquentiels du moment le permettaient.
 
@@ -70,25 +73,29 @@ Pas de langages de programmation communs
 
 $\Rightarrow$ __Parallélisme a toujours été présent dans les esprits, mais il a toujours été suplantés par des techniques plus simples jusqu'à maintenant.__
 
-#### Systèmes parallèles et répartis (distribués)
+## Systèmes parallèles et répartis (distribués)
 
 Plusieurs PE $\Rightarrow$ concurrence
 
 - calcul parallèle
 - calcul réparti
 
-Parallélisme: Plusieurs processeurs coopérant à la solution d'un même problème
+### Définition parallélisme
 
-Réparti: ensemble de processeurs qui résolvant plusieurs problèmes couplés
+Plusieurs processeurs coopérant à la solution d'un même problème
 
-Tableau différentiateur
+### Définition réparti
+
+Ensemble de processeurs qui résolvent plusieurs problèmes couplés
+
+### Tableau différentiateur
 
 |             |   couplage  |   mise en commun délibérée|        granularité|      hypothèses sur le système |      connaissance mutuelle|     sécurité|
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |parallélisme |   fort      |         oui               |       fine        |           oui                |        oui                 |    non|
 |réparti      |   faible    |         non               |     grossière     |           non                |        non                 |    oui|
 
-#### Exploiter le parallélisme
+## Exploiter le parallélisme
 
 _Comment faire coopérer plusieurs processeurs pour efficacement résoudre un problème ?_
 
@@ -97,11 +104,14 @@ Pour illustrer des stratégies de coopération, on va utiliser un exemple de la 
 La famille Dupont, Mme, M, Marie et Pierre doivent préparer un goûter d'anniversaire avec un grand nombre de tartines.
 
 Les tâches pour chaque tartine sont les suivantes:
+
 1. Couper une tranche de pain
 2. Beurrer la tranche
 3. Mettre la confiture
 4. Ranger sur un plat
-1 ère stratégie (séquentielle)
+
+### 1 ère stratégie (séquentielle)
+
 - Mme Dupont fait toutes les tartines car le reste de la famille est incapable et ralentirait le processus.
 
 Parfois, un seul processeur, puissant et bien programmé, fait bien le travail.
@@ -117,7 +127,8 @@ tartine nb
 
 Pour n tartines, il faut $T_{seq} = N4\tau$ où $\tau$ est le temps de chacune des 4 tâches
 
-2 ème stratégie: Travail à la chaîne
+### 2 ème stratégie: Travail à la chaîne
+
 ```text
            Mme    M   Pierre   Marie
 tartine -> t1 -> t2 -> t3   ->  t4
@@ -135,18 +146,24 @@ $T_{pipeline} = 4\tau + (n - 1)\tau$ avec $4\tau$ le temps de la première tarti
 
 Gain: $\frac{T_{seq}}{T_{pipeline}} = \frac{4\tau n}{4\tau + (n - 1)\tau} ~ \frac{4\tau n}{n \tau} = 4$ On a 4 travailleurs -> 4 fois plus vite.
 
+#### Limites
+
 Mais il y a des limites au travail à la chaîne:
 
 - Toutes les tâches doivent être de même durée, et les PE de même puissance
 - Si le pipeline s'interrompt, il faut le 'recharger' pour avoir des performances
 - Il n'y a du travail que pour 4 personnes car il n'y a que 4 tâches... Si le voisin veut aider, il n'aura rien à faire: Gain limité à 4.
 
-3 ème stratégie: SIMD (Single Instruction flow, Multiple Data flow) (C'est un peu une organisation militaire... Il y a une liste de choses à faire... Chacun fait la même chose en même temps).
-Avantages:
+### 3 ème stratégie: SIMD (Single Instruction flow, Multiple Data flow)
+
+(C'est un peu une organisation militaire... Il y a une liste de choses à faire... Chacun fait la même chose en même temps).
+
+#### Avantages:
 
 - Autant de travailleurs jusqu'à N le nombre de tartines.
 - Tâches peuvent être de durée différente -> on reste synchronisé.
 
+```text
 tartine nb
 
                    t1 t2 t3 t4
@@ -155,6 +172,7 @@ tartine nb
       |t1 t2 t3 t4
       |______________
                  temps
+```
 
 Si on a p travailleurs
 $T_{SIMD}= \frac{N}{p}4\tau$
